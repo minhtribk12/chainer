@@ -40,6 +40,10 @@ class Softplus(function.Function):
         )(x, self.beta, self.beta_inv)
         return y,
 
+    def forward_mic(self, inputs):
+        #TODO: superbo
+        pass
+
     def backward_cpu(self, inputs, grads):
         x, = inputs
         g, = grads
@@ -55,6 +59,10 @@ class Softplus(function.Function):
             'softplus_bwd'
         )(x, g, self.beta)
         return gx,
+
+    def backward_mic(self, inputs, grads):
+        #TODO: superbo
+        pass
 
 
 def softplus(x, beta=1.0):

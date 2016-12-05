@@ -32,6 +32,10 @@ class ELU(function.Function):
                 x[0], self.alpha)
         return y,
 
+    def forward_mic(self, x):
+        #TODO(superbo)
+        pass
+
     def backward_cpu(self, x, gy):
         gx = gy[0].copy()
         neg_indices = x[0] < 0
@@ -45,6 +49,10 @@ class ELU(function.Function):
             'elu_bwd')(
                 x[0], gy[0], self.alpha)
         return gx,
+
+    def backward_mic(self, x, gy):
+        #TODO(superbo)
+        pass
 
 
 def elu(x, alpha=1.0):

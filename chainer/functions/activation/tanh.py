@@ -36,6 +36,10 @@ class Tanh(function.Function):
             cuda.cupy.tanh(x[0], out=self.y)
         return self.y,
 
+    def forward_mic(self, x):
+        #TODO: superbo
+        pass
+
     def backward_cpu(self, x, gy):
         one = x[0].dtype.type(1)
         return utils.force_array(gy[0] * (one - self.y * self.y)),
@@ -50,6 +54,10 @@ class Tanh(function.Function):
                 'gx = gy * (1 - y * y)',
                 'tanh_bwd')(self.y, gy[0])
         return gx,
+
+    def backward_mic(self, x, gy):
+        #TODO: superbo
+        pass
 
 
 def tanh(x, use_cudnn=True):

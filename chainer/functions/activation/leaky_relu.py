@@ -30,6 +30,10 @@ class LeakyReLU(function.Function):
         y = _kern()(x[0], x[0], self.slope)
         return y,
 
+    def forward_mic(self, x):
+        #TODO: superbo
+        pass
+
     def backward_cpu(self, x, gy):
         gx = gy[0].copy()
         gx[x[0] < 0] *= self.slope
@@ -39,6 +43,9 @@ class LeakyReLU(function.Function):
         gx = _kern()(x[0], gy[0], self.slope)
         return gx,
 
+    def backward_mic(self, x, gy):
+        #TODO: superbo
+        pass
 
 def leaky_relu(x, slope=0.2):
     """Leaky Rectified Linear Unit function.

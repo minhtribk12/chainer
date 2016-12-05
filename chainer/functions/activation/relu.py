@@ -39,6 +39,10 @@ class ReLU(function.Function):
             y = cuda.cupy.maximum(x[0], 0)
         return y,
 
+    def forward_mic(self, x):
+        #TODO(supero)
+        pass
+
     def backward_cpu(self, x, gy):
         return utils.force_array(gy[0] * (x[0] > 0)),
 
@@ -52,6 +56,10 @@ class ReLU(function.Function):
                 'gx = x > 0 ? gy : (T)0',
                 'relu_bwd')(x[0], gy[0])
         return gx,
+
+    def backward_mic(self, x, gy):
+        #TODO(superbo)
+        pass
 
 
 def relu(x, use_cudnn=True):

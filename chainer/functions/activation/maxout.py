@@ -48,3 +48,4 @@ def maxout(x, pool_size, axis=1):
              x_shape[axis + 1:])
     x = reshape.reshape(x, shape)
     return minmax.max(x, axis=axis + 1)
+

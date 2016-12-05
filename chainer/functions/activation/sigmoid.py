@@ -39,6 +39,10 @@ class Sigmoid(function.Function):
                 'sigmoid_fwd')(x)
         return self.y,
 
+    def forward_mic(self, inputs):
+        #TODO: superbo
+        pass
+
     def backward_cpu(self, x, gy):
         one = x[0].dtype.type(1)
         return utils.force_array(gy[0] * self.y * (one - self.y)),
@@ -55,6 +59,10 @@ class Sigmoid(function.Function):
                 'gx = gy * y * (1 - y)',
                 'sigmoid_bwd')(self.y, gy)
         return gx,
+
+    def backward_mic(self, inputs, grads):
+        #TODO: superbo
+        pass
 
 
 def sigmoid(x, use_cudnn=True):

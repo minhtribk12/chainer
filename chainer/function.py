@@ -352,6 +352,23 @@ Invalid operation is performed in: {0} (Forward)
         """
         raise NotImplementedError()
 
+    def forward_mic(self, inputs):
+        """Applies forward propagation to input arrays on MIC.
+
+        Args:
+            inputs: Tuple of :class:`pymic.ndarray` object(s).
+
+        Returns:
+            tuple: Tuple of :class:`pymic.ndarray` object(s).
+
+        .. warning::
+
+            Implementations of :class:`Function` must take care that the
+            return value must be a tuple even if it returns only one array.
+
+        """
+        raise NotImplementedError()
+
     def backward(self, inputs, grad_outputs):
         """Applies backprop to output gradient arrays.
 
@@ -423,6 +440,29 @@ Invalid operation is performed in: {0} (Forward)
 
         """
         return tuple(None for _ in inputs)
+
+    def backward_mic(self, inputs, grad_outputs):
+        """Applies backprop to output gradient arrays on MIC.
+
+        Args:
+            inputs: Tuple of input :class:`pymic.ndarray`
+                object(s).
+            grad_outputs: Tuple of output gradient
+                :class:`pymic.ndarray` object(s).
+
+        Returns:
+            tuple: Tuple of input gradient :class:`pymic.ndarray`
+            object(s). Some or all of them can be ``None``, if the function is
+            not differentiable on corresponding inputs.
+
+        .. warning::
+
+            Implementations of :class:`Function` must take care that the
+            return value must be a tuple even if it returns only one array.
+
+        """
+        return tuple(None for _ in inputs)
+
 
     def unchain(self):
         """Purges in/out variables and this function itself from the graph.

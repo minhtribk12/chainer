@@ -40,6 +40,10 @@ class PReLUFunction(function.Function):
         y = _fwd_kern()(x, x, W.reshape(shape))
         return y,
 
+    def forward_mic(self, inputs):
+        #TODO: superbo
+        pass
+
     def backward_cpu(self, inputs, grad_outputs):
         x, W = inputs
         gy = grad_outputs[0]
@@ -70,6 +74,10 @@ class PReLUFunction(function.Function):
         shape = _get_extended_shape(W, gx)
         _fwd_kern()(gy, x, W.reshape(shape), gx)
         return gx, gW
+
+    def backward_mic(self, inputs, grad_outputs):
+        #TODO: superbo
+        pass
 
 
 def prelu(x, W):

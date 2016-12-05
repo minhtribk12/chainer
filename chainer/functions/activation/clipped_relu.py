@@ -48,6 +48,14 @@ class ClippedReLU(function.Function):
             'clipped_relu_bwd')(x[0], gy[0], self.cap)
         return gx,
 
+    def forward_mic(self, x):
+        #TODO(superbo)
+        pass
+
+    def backward_mic(self, x, gy):
+        #TODO(superbo)
+        pass
+
 
 def clipped_relu(x, z=20.0):
     """Clipped Rectifier Unit function.

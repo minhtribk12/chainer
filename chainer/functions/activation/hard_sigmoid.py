@@ -29,6 +29,10 @@ class HardSigmoid(function.Function):
             'hard_sigmoid_fwd'
         )(x),
 
+    def forward_mic(self, inputs):
+        #TODO: superbo
+        pass
+
     def backward_cpu(self, inputs, grads):
         x = inputs[0]
         g = grads[0]
@@ -43,6 +47,10 @@ class HardSigmoid(function.Function):
             'gx = fabs(x) < 2.5 ? 0.2 * g : 0',
             'hard_sigmoid_bwd'
         )(x, g),
+
+    def backward_mic(self, inputs, grads):
+        #TODO: superbo
+        pass
 
 
 def hard_sigmoid(x):
