@@ -5,7 +5,9 @@ import warnings
 import numpy
 import six
 
+from chainer import device
 from chainer import cuda
+from chainer import mic
 from chainer import initializers
 from chainer import variable
 
@@ -140,7 +142,13 @@ class Link(object):
         :mod:`numpy` or :mod:`cupy`.
 
         """
-        return numpy if self._cpu else cuda.cupy
+        if self._cpu:
+            return numpy
+        elif cuda.available:
+            return cuda.cupy
+        elif mic.available:
+            return mic.micpy
+        return numpy
 
     def add_param(self, name, shape, dtype=numpy.float32, initializer=None):
         """Registers a parameter to the link.
@@ -305,6 +313,9 @@ class Link(object):
             value = d[name]
             if isinstance(value, cuda.ndarray):
                 d[name] = value.get()
+            if isinstance(value, mic.ndarray):
+                value.update_host()
+                d[name] = value.array
         self._cpu = True
         self._device_id = None
         return self
@@ -335,6 +346,36 @@ class Link(object):
                 if isinstance(value, numpy.ndarray):
                     d[name] = cuda.to_gpu(value)
             self._device_id = cuda.cupy.cuda.get_device_id()
+        self._cpu = False
+        return self
+
+    def to_mic(self, device=None):
+        """Copies parameter variables and persistent values to MIC.
+
+        This method does not handle non-registered attributes. If some of such
+        attributes must be copied to GPU, the link implementation must
+        override this method to do so.
+
+        Args:
+            device: Target device specifier. If omitted, the current device is
+                used.
+
+        Returns: self
+
+        """
+        mic.check_mic_available()
+        if not self._cpu:
+            return self
+        d = self.__dict__
+        dev = mic.get_device(device)
+        with dev:
+            for name in self._params:
+                d[name].to_mic(device)
+            for name in self._persistent:
+                value = d[name]
+                if isinstance(value, numpy.ndarray):
+                    d[name] = mic.to_mic(value)
+            self._device_id = dev.id
         self._cpu = False
         return self
 
@@ -625,6 +666,14 @@ class Chain(Link):
                 d[name].to_gpu()
         return self
 
+    def to_mic(self, device=None):
+        with mic.get_device(device):
+            super(Chain, self).to_mic()
+            d = self.__dict__
+            for name in self._children:
+                d[name].to_mic()
+        return self
+
     def params(self):
         for param in super(Chain, self).params():
             yield param
@@ -776,6 +825,13 @@ class ChainList(Link):
             super(ChainList, self).to_gpu()
             for link in self._children:
                 link.to_gpu()
+        return self
+
+    def to_mic(self, device=None):
+        with mic.get_device(device):
+            super(ChainList, self).to_mic()
+            for link in self._childern:
+                link.to_mic()
         return self
 
     def params(self):

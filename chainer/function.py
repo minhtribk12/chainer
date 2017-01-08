@@ -9,6 +9,7 @@ import six
 
 import chainer
 from chainer import cuda
+from chainer import mic
 from chainer import flag
 from chainer.utils import type_check
 from chainer import variable
@@ -315,6 +316,8 @@ Invalid operation is performed in: {0} (Forward)
         """
         if any(isinstance(x, cuda.ndarray) for x in inputs):
             return self.forward_gpu(inputs)
+        elif any(isinstance(x, mic.ndarray) for x in inputs):
+            return self.forward_mic(inputs)
         else:
             return self.forward_cpu(inputs)
 
@@ -395,6 +398,8 @@ Invalid operation is performed in: {0} (Forward)
         """
         if any(isinstance(x, cuda.ndarray) for x in inputs + grad_outputs):
             return self.backward_gpu(inputs, grad_outputs)
+        if any(isinstance(x, mic.ndarray) for x in inputs + grad_outputs):
+            return self.backward_mic(inputs, grad_outputs)
         else:
             return self.backward_cpu(inputs, grad_outputs)
 

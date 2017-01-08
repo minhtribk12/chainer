@@ -2,6 +2,7 @@ import numpy
 
 import chainer
 from chainer import cuda
+from chainer import mic
 from chainer import function
 from chainer.functions.activation import log_softmax
 from chainer.utils import type_check
@@ -87,6 +88,25 @@ class SoftmaxCrossEntropy(function.Function):
         )(t, log_y.reduced_view(), log_y.shape[-1], self._coeff)
         return ret,
 
+    def forward_mic(self, inputs):
+        micpy = mic.micpy
+        x, t = inputs
+        if chainer.is_debug():
+            self._check_input_values(x, t)
+
+        if self.normalize:
+            coeff = micpy.dnn.normalize_coeff(t, self.ignore_label)
+        else:
+            coeff = None
+        self._coeff = coeff
+
+        loss, y = micpy.dnn.softmax_cross_entropy(x, t,
+                        self.ignore_label, coeff, self.cache_score)
+
+        if y != None:
+            self.y = y
+        return loss,
+
     def backward_cpu(self, inputs, grad_outputs):
         x, t = inputs
         gloss = grad_outputs[0]
@@ -134,6 +154,18 @@ class SoftmaxCrossEntropy(function.Function):
             ''',
             'softmax_crossent_bwd')(
                 y, cupy.expand_dims(t, 1), coeff, x.shape[1], n_unit)
+        return gx, None
+    
+    def backward_mic(self, inputs, grad_outputs):
+        micpy = mic.micpy
+        x, t = inputs
+        gloss = grad_outputs[0]
+        y = self.y if hasattr(self, 'y') else None
+        coeff = self._coeff if hasattr(self, '_coeff') else None
+        n_unit = t.size // len(t)
+
+        gx = micpy.dnn.softmax_cross_entropy_grad(x, t, y, gloss, 
+                                    self.ignore_label, coeff)
         return gx, None
 
 

@@ -3,6 +3,7 @@ from __future__ import division
 import numpy
 
 from chainer import cuda
+from chainer import mic
 from chainer import function
 from chainer.utils import type_check
 
@@ -22,6 +23,9 @@ class BinaryAccuracy(function.Function):
         )
 
     def forward(self, inputs):
+        if any(isinstance(i, mic.ndarray) for i in inputs):
+            return self.forward_mic(inputs)
+
         xp = cuda.get_array_module(*inputs)
         y, t = inputs
         # flatten
@@ -30,6 +34,11 @@ class BinaryAccuracy(function.Function):
         c = (y >= 0)
         count = xp.maximum(1, (t != self.ignore_label).sum())
         return xp.asarray((c == t).sum() / count, dtype=y.dtype),
+    
+    def forward_mic(self, inputs):
+        micpy = mic.micpy
+        y, t = inputs
+        return micpy.dnn.bin_accuracy(y, t, self.ignore_label),
 
 
 def binary_accuracy(y, t):
