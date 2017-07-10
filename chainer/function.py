@@ -9,6 +9,7 @@ import six
 
 import chainer
 from chainer import cuda
+from chainer import mic
 from chainer import flag
 from chainer.utils import type_check
 from chainer import variable
@@ -315,6 +316,8 @@ Invalid operation is performed in: {0} (Forward)
         """
         if any(isinstance(x, cuda.ndarray) for x in inputs):
             return self.forward_gpu(inputs)
+        elif any(isinstance(x, mic.ndarray) for x in inputs):
+            return self.forward_mic(inputs)
         else:
             return self.forward_cpu(inputs)
 
@@ -356,10 +359,10 @@ Invalid operation is performed in: {0} (Forward)
         """Applies forward propagation to input arrays on MIC.
 
         Args:
-            inputs: Tuple of :class:`pymic.ndarray` object(s).
+            inputs: Tuple of :class:`micpy.ndarray` object(s).
 
         Returns:
-            tuple: Tuple of :class:`pymic.ndarray` object(s).
+            tuple: Tuple of :class:`micpy.ndarray` object(s).
 
         .. warning::
 
@@ -395,6 +398,8 @@ Invalid operation is performed in: {0} (Forward)
         """
         if any(isinstance(x, cuda.ndarray) for x in inputs + grad_outputs):
             return self.backward_gpu(inputs, grad_outputs)
+        if any(isinstance(x, mic.ndarray) for x in inputs + grad_outputs):
+            return self.backward_mic(inputs, grad_outputs)
         else:
             return self.backward_cpu(inputs, grad_outputs)
 
@@ -445,13 +450,13 @@ Invalid operation is performed in: {0} (Forward)
         """Applies backprop to output gradient arrays on MIC.
 
         Args:
-            inputs: Tuple of input :class:`pymic.ndarray`
+            inputs: Tuple of input :class:`micpy.ndarray`
                 object(s).
             grad_outputs: Tuple of output gradient
-                :class:`pymic.ndarray` object(s).
+                :class:`micpy.ndarray` object(s).
 
         Returns:
-            tuple: Tuple of input gradient :class:`pymic.ndarray`
+            tuple: Tuple of input gradient :class:`micpy.ndarray`
             object(s). Some or all of them can be ``None``, if the function is
             not differentiable on corresponding inputs.
 

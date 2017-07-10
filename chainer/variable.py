@@ -7,7 +7,9 @@ import numpy
 import six
 
 import chainer
+from chainer import device as devutil
 from chainer import cuda
+from chainer import mic
 from chainer import flag
 
 
@@ -89,8 +91,8 @@ class Variable(object):
     """
 
     def __init__(self, data, volatile=flag.OFF, name=None, grad=None):
-        if not isinstance(data, (numpy.ndarray, cuda.ndarray)):
-            msg = '''numpy.ndarray or cuda.ndarray are expected.
+        if not isinstance(data, (numpy.ndarray, cuda.ndarray, mic.ndarray)):
+            msg = '''numpy.ndarray or cuda.ndarray or mic.ndarray are expected.
 Actual: {0}'''.format(type(data))
             raise TypeError(msg)
 
@@ -210,9 +212,14 @@ Actual: {0}'''.format(type(data))
 
     def to_cpu(self):
         """Copies the data and gradient arrays to CPU."""
-        self.data = cuda.to_cpu(self.data)
-        if self._grad is not None:
-            self._grad = cuda.to_cpu(self._grad)
+        if isinstance(self.data, mic.ndarray):
+            self.data = mic.to_cpu(self.data)
+            if self._grad is not None:
+                self._grad = mic.to_cpu(self._grad)
+        else:
+            self.data = cuda.to_cpu(self.data)
+            if self._grad is not None:
+                self._grad = cuda.to_cpu(self._grad)
 
     def to_gpu(self, device=None):
         """Copies the data and gradient arrays to specified GPU.
@@ -226,6 +233,18 @@ Actual: {0}'''.format(type(data))
             self.data = cuda.to_gpu(self.data)
             if self._grad is not None:
                 self._grad = cuda.to_gpu(self._grad)
+
+    def to_mic(self, device=None):
+        """Copies the data and gradient arrays to specified MIC.
+
+        Args:
+            device: Target device specifier. If omitted, the current device is
+                used.
+
+        """
+        self.data = mic.to_mic(self.data, device)
+        if self._grad is not None:
+            self._grad = mic.to_mic(self._grad, device)
 
     def cleargrad(self):
         """Clears the gradient array."""
@@ -241,9 +260,9 @@ Actual: {0}'''.format(type(data))
         warnings.warn(
             'Variable.zerograd is deprecated. Use Variable.cleargard instead.',
             DeprecationWarning)
-        with cuda.get_device(self.data) as dev:
+        with devutil.get_device(self.data) as dev:
             if self._grad is None:
-                xp = numpy if int(dev) == -1 else cuda.cupy
+                xp = devutil.get_array_module(self.data)
                 self._grad = xp.zeros_like(self.data)
             else:
                 self._grad.fill(0)
@@ -261,8 +280,8 @@ Actual: {0}'''.format(type(data))
         """
         src = var.data
         dst = self.data
-        src_xp = cuda.get_array_module(src)
-        dst_xp = cuda.get_array_module(dst)
+        src_xp = devutil.get_array_module(src)
+        dst_xp = devutil.get_array_module(dst)
         if dst_xp is src_xp:
             dst_xp.copyto(dst, src)
         elif dst_xp is numpy:
@@ -285,22 +304,22 @@ Actual: {0}'''.format(type(data))
         if src is None:
             return
 
-        src_dev = cuda.get_device(src)
-        dst_dev = cuda.get_device(self.data)
+        src_dev = devutil.get_device(src)
+        dst_dev = devutil.get_device(self.data)
 
         if src_dev.id == dst_dev.id:
             with dst_dev:
                 if dst is None:
-                    xp = cuda.get_array_module(src)
+                    xp = devutil.get_array_module(src)
                     self._grad = xp.copy(src)
                 else:
                     self._grad += src
             return
 
         if dst_dev.id < 0:
-            src_grad = cuda.to_cpu(src)
+            src_grad = devutil.to_cpu(src)
         else:
-            src_grad = cuda.to_gpu(src, device=dst_dev)
+            src_grad = devutil.to_gpu(src, device=dst_dev)
 
         if dst is None:
             self._grad = src_grad
@@ -358,10 +377,12 @@ Actual: {0}'''.format(type(data))
 
         # Initialize error by 1, if this is a loss variable
         if self.data.size == 1 and self.grad is None:
-            with cuda.get_device(self.data) as device:
-                if device is cuda.DummyDevice:
+            with devutil.get_device(self.data) as device:
+                if device is devutil.DummyDevice:
                     self.grad = numpy.ones_like(self.data)
-                else:
+                elif devutil.MIC:
+                    self.grad = mic.micpy.ones_like(self.data)
+                elif devutil.GPU:
                     self.grad = cuda.cupy.ones_like(self.data)
 
         def add_cand(cand):
@@ -384,7 +405,7 @@ Actual: {0}'''.format(type(data))
                 hooks.update(func.local_function_hooks)
             for hook in six.itervalues(hooks):
                 hook.backward_preprocess(func, in_data, out_grad)
-            with cuda.get_device(*(in_data + out_grad)):
+            with devutil.get_device(*(in_data + out_grad)):
                 gxs = func.backward(in_data, out_grad)
             assert len(gxs) == len(in_data)
             for hook in six.itervalues(hooks):
@@ -392,7 +413,7 @@ Actual: {0}'''.format(type(data))
 
             if chainer.is_debug():
                 if any(gx is not None and
-                       cuda.get_array_module(gx).isnan(gx).any()
+                       devutil.get_array_module(gx).isnan(gx).any()
                        for gx in gxs):
                     msg = 'NaN is detected on backward computation'
                     raise RuntimeError(msg)
@@ -409,7 +430,7 @@ Actual: {0}'''.format(type(data))
 
                 # Accumulate the gradient to x. It is a bit tricky to handle
                 # branches and parameter gradient accumulation correctly.
-                with cuda.get_device(gx):
+                with devutil.get_device(gx):
                     id_x = id(x)
                     if x.creator is None:  # leaf
                         if x._grad is None:

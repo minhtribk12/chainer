@@ -4,6 +4,7 @@ import numpy
 import six
 
 from chainer import cuda
+from chainer import mic
 import chainer.link as link_module
 
 
@@ -162,6 +163,22 @@ class Optimizer(object):
         .. seealso:: :meth:`init_state`
 
         """
+        pass
+
+    def init_state_mic(self, param, state):
+        """Initializes the optimizer state on MIC.
+
+        This method is called from :meth:`init_state` by default.
+
+        Args:
+            param (~chainer.Variable): Parameter variable. Its data array is
+                of type :class:`micpy.ndarray`.
+            state (dict): State dictionary.
+
+        .. seealso:: :meth:`init_state`
+
+        """
+        #TODO(supebo)
         pass
 
     def update(self, lossfun=None, *args, **kwds):
@@ -427,6 +444,8 @@ class GradientMethod(Optimizer):
         """
         if isinstance(param.data, numpy.ndarray):
             self.update_one_cpu(param, state)
+        elif isinstance(param.data, mic.micpy.ndarray):
+            self.update_one_mic(param, state)
         else:
             self.update_one_gpu(param, state)
 
@@ -442,6 +461,16 @@ class GradientMethod(Optimizer):
 
     def update_one_gpu(self, param, state):
         """Updates a parameter on GPU.
+
+        Args:
+            param (~chainer.Variable): Parameter variable.
+            state (dict): State dictionary.
+
+        """
+        raise NotImplementedError
+
+    def update_one_mic(self, param, state):
+        """Updates a parameter on MIC.
 
         Args:
             param (~chainer.Variable): Parameter variable.

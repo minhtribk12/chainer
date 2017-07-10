@@ -1,7 +1,7 @@
 import numpy
 import six
 
-from chainer import cuda
+from chainer import device as devhelp
 
 
 def concat_examples(batch, device=None, padding=None):
@@ -54,10 +54,10 @@ def concat_examples(batch, device=None, padding=None):
         def to_device(x):
             return x
     elif device < 0:
-        to_device = cuda.to_cpu
+        to_device = devhelp.to_cpu
     else:
         def to_device(x):
-            return cuda.to_gpu(x, device, cuda.Stream.null)
+            return devhelp.to_device(x, device)
 
     first_elem = batch[0]
 
@@ -91,8 +91,8 @@ def _concat_arrays(arrays, padding):
     if padding is not None:
         return _concat_arrays_with_padding(arrays, padding)
 
-    xp = cuda.get_array_module(arrays[0])
-    with cuda.get_device(arrays[0]):
+    xp = devhelp.get_array_module(arrays[0])
+    with devhelp.get_device(arrays[0]):
         return xp.concatenate([array[None] for array in arrays])
 
 
@@ -103,8 +103,8 @@ def _concat_arrays_with_padding(arrays, padding):
             numpy.maximum(shape, array.shape, shape)
     shape = tuple(numpy.insert(shape, 0, len(arrays)))
 
-    xp = cuda.get_array_module(arrays[0])
-    with cuda.get_device(arrays[0]):
+    xp = devhelp.get_array_module(arrays[0])
+    with devhelp.get_device(arrays[0]):
         result = xp.full(shape, padding, dtype=arrays[0].dtype)
         for i in six.moves.range(len(arrays)):
             src = arrays[i]

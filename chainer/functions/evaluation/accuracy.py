@@ -2,6 +2,7 @@ import numpy
 import six
 
 from chainer import cuda
+from chainer import mic
 from chainer import function
 from chainer.utils import type_check
 
@@ -30,6 +31,9 @@ class Accuracy(function.Function):
             type_check.expect(x_type.shape[i] == 1)
 
     def forward(self, inputs):
+        if any(isinstance(i, mic.ndarray) for i in inputs):
+            return self.forward_mic(inputs)
+
         xp = cuda.get_array_module(*inputs)
         y, t = inputs
 
@@ -53,6 +57,10 @@ class Accuracy(function.Function):
         else:
             pred = y.argmax(axis=1).reshape(t.shape)
             return xp.asarray((pred == t).mean(dtype=y.dtype)),
+
+    def forward_mic(self, inputs):
+        y, t = inputs
+        return mic.micpy.dnn.accuracy(y, t, self.ignore_label),
 
 
 def accuracy(y, t, ignore_label=None):

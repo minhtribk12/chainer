@@ -1,4 +1,5 @@
 from chainer import cuda
+from chainer import mic
 from chainer import optimizer
 
 
@@ -16,3 +17,7 @@ class SGD(optimizer.GradientMethod):
         cuda.elementwise('T grad, T lr', 'T param',
                          'param -= lr * grad',
                          'sgd')(param.grad, self.lr, param.data)
+
+    def update_one_mic(self, param, state):
+        #TODO(superbo): implement this
+        mic.micpy.dnn.grad_decrease(param.data, param.grad, self.lr)

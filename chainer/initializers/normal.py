@@ -1,6 +1,6 @@
 import numpy
 
-from chainer import cuda
+from chainer import device as devhelper
 from chainer import initializer
 
 
@@ -26,7 +26,7 @@ class Normal(initializer.Initializer):
         super(Normal, self).__init__(dtype)
 
     def __call__(self, array):
-        xp = cuda.get_array_module(array)
+        xp = devhelper.get_array_module(array)
         array[...] = xp.random.normal(
             loc=0.0, scale=self.scale, size=array.shape)
 
