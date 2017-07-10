@@ -1,5 +1,4 @@
 import numpy
-
 import micpy
 
 from chainer import cuda

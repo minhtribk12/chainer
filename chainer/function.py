@@ -359,10 +359,10 @@ Invalid operation is performed in: {0} (Forward)
         """Applies forward propagation to input arrays on MIC.
 
         Args:
-            inputs: Tuple of :class:`pymic.ndarray` object(s).
+            inputs: Tuple of :class:`micpy.ndarray` object(s).
 
         Returns:
-            tuple: Tuple of :class:`pymic.ndarray` object(s).
+            tuple: Tuple of :class:`micpy.ndarray` object(s).
 
         .. warning::
 
@@ -450,13 +450,13 @@ Invalid operation is performed in: {0} (Forward)
         """Applies backprop to output gradient arrays on MIC.
 
         Args:
-            inputs: Tuple of input :class:`pymic.ndarray`
+            inputs: Tuple of input :class:`micpy.ndarray`
                 object(s).
             grad_outputs: Tuple of output gradient
-                :class:`pymic.ndarray` object(s).
+                :class:`micpy.ndarray` object(s).
 
         Returns:
-            tuple: Tuple of input gradient :class:`pymic.ndarray`
+            tuple: Tuple of input gradient :class:`micpy.ndarray`
             object(s). Some or all of them can be ``None``, if the function is
             not differentiable on corresponding inputs.
 
