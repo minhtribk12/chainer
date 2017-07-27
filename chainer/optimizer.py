@@ -6,6 +6,7 @@ import six
 from chainer import cuda
 from chainer import mic
 import chainer.link as link_module
+from chainer import device as devhelper
 
 
 def _sum_sqnorm(arr):
@@ -418,8 +419,8 @@ class GradientMethod(Optimizer):
         # affect to a parameter when its gradient is zero.
         for name, param in self.target.namedparams():
             if param.grad is None:
-                with cuda.get_device(param.data):
-                    xp = cuda.get_array_module(param.data)
+                with devhelper.get_device(param.data):
+                    xp = devhelper.get_array_module(param.data)
                     param.grad = xp.zeros_like(param.data)
 
         self.call_hooks()
@@ -428,7 +429,7 @@ class GradientMethod(Optimizer):
         self.t += 1
         states = self._states
         for name, param in self.target.namedparams():
-            with cuda.get_device(param.data):
+            with devhelper.get_device(param.data):
                 self.update_one(param, states[name])
 
     def update_one(self, param, state):

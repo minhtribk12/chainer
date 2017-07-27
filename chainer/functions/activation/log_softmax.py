@@ -3,6 +3,7 @@ import numpy
 from chainer import cuda
 from chainer import function
 from chainer.utils import type_check
+from chainer import device as devutil
 
 if cuda.cudnn_enabled:
     cudnn = cuda.cudnn
@@ -13,7 +14,7 @@ if cuda.cudnn_enabled:
 
 
 def logsumexp(x):
-    xp = cuda.get_array_module(x)
+    xp = devutil.get_array_module(x)
     m = x.max(axis=1, keepdims=True)
     y = x - m
     xp.exp(y, out=y)
@@ -66,7 +67,7 @@ class LogSoftmax(function.Function):
         return self.y,
 
     def backward(self, x, gy):
-        xp = cuda.get_array_module(*x)
+        xp = devutil.get_array_module(*x)
         if (xp != numpy and cuda.cudnn_enabled and self.use_cudnn and
                 _cudnn_version >= 3000):
             oz_dtype = 'd' if x[0].dtype == 'd' else 'f'

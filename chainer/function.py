@@ -13,6 +13,7 @@ from chainer import mic
 from chainer import flag
 from chainer.utils import type_check
 from chainer import variable
+from chainer import device as devutil
 
 
 _thread_local = threading.local()
@@ -196,7 +197,7 @@ class Function(object):
         for hook in six.itervalues(hooks):
             hook.forward_preprocess(self, in_data)
         # Forward prop
-        with cuda.get_device(*in_data):
+        with devutil.get_device(*in_data):
             outputs = self.forward(in_data)
             assert type(outputs) == tuple
         for hook in six.itervalues(hooks):

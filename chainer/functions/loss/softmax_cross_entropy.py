@@ -94,18 +94,27 @@ class SoftmaxCrossEntropy(function.Function):
         if chainer.is_debug():
             self._check_input_values(x, t)
 
+        log_y = log_softmax._log_softmax(x, False)
+        if self.cache_score:
+            self.y = micpy.exp(log_y)
+
+        log_yd = micpy.rollaxis(log_y, 1, log_y.ndim)
+        tmask = micpy.expand_dims(t, t.ndim)
+        n_label = log_yd.shape[-1]
+
+        if not hasattr(self, '_imask') or \
+                    self._imask.shape[-2] != t.shape[0]:
+            imask = numpy.tile(numpy.arange(n_label), (t.shape[0], 1))
+            self._imask = micpy.to_mic(imask)
+
         if self.normalize:
-            coeff = micpy.dnn.normalize_coeff(t, self.ignore_label)
+            count = (t != self.ignore_label).sum()
         else:
-            coeff = None
-        self._coeff = coeff
+            count = len(x)
+        self._coeff = 1.0 / max(count, 1)
 
-        loss, y = micpy.dnn.softmax_cross_entropy(x, t,
-                        self.ignore_label, coeff, self.cache_score)
-
-        if y != None:
-            self.y = y
-        return loss,
+        y = (log_yd * (self._imask == tmask)).sum(keepdims=True) * (-self._coeff)
+        return y.reshape(()),
 
     def backward_cpu(self, inputs, grad_outputs):
         x, t = inputs
@@ -155,17 +164,31 @@ class SoftmaxCrossEntropy(function.Function):
             'softmax_crossent_bwd')(
                 y, cupy.expand_dims(t, 1), coeff, x.shape[1], n_unit)
         return gx, None
-    
+
     def backward_mic(self, inputs, grad_outputs):
         micpy = mic.micpy
         x, t = inputs
         gloss = grad_outputs[0]
-        y = self.y if hasattr(self, 'y') else None
-        coeff = self._coeff if hasattr(self, '_coeff') else None
-        n_unit = t.size // len(t)
+        n_unit = t.size // t.shape[0]
 
-        gx = micpy.dnn.softmax_cross_entropy_grad(x, t, y, gloss, 
-                                    self.ignore_label, coeff)
+        if hasattr(self, 'y'):
+            y = self.y
+        else:
+            y = log_softmax._log_softmax(x, False)
+            micpy.exp(y, out=y)
+
+        yd = micpy.rollaxis(y, 1, y.ndim)
+        tmask = micpy.expand_dims(t, t.ndim)
+        n_label = yd.shape[-1]
+
+        if not hasattr(self, '_imask') or self._imask.shape[-2] != t.shape[0]:
+            imask = numpy.tile(numpy.arange(n_label), (t.shape[0], 1))
+            self._imask = micpy.to_mic(imask)
+
+        gx = yd - (self._imask == tmask)
+        gx = micpy.rollaxis(gx, gx.ndim - 1, 1)
+
+        gx *= gloss * self._coeff
         return gx, None
 
 

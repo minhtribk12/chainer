@@ -20,4 +20,4 @@ class SGD(optimizer.GradientMethod):
 
     def update_one_mic(self, param, state):
         #TODO(superbo): implement this
-        mic.micpy.dnn.grad_decrease(param.data, param.grad, self.lr)
+        param.data -= self.lr * param.grad

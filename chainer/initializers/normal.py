@@ -25,10 +25,14 @@ class Normal(initializer.Initializer):
         self.scale = scale
         super(Normal, self).__init__(dtype)
 
-    def __call__(self, array):
+    def __call__(self, array, shape=None, dtype=None):
         xp = devhelper.get_array_module(array)
-        array[...] = xp.random.normal(
-            loc=0.0, scale=self.scale, size=array.shape)
+        if xp != devhelper.mic.micpy:
+            array[...] = xp.random.normal(
+                loc=0.0, scale=self.scale, size=array.shape)
+        else:
+            xp.copyto(array, xp.random.normal(
+                loc=0.0, scale=self.scale, size=array.shape))
 
 
 class GlorotNormal(initializer.Initializer):

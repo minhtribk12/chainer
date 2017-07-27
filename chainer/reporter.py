@@ -5,6 +5,7 @@ import numpy
 import six
 
 from chainer import cuda
+from chainer import device as devhelper
 from chainer import variable
 
 
@@ -226,7 +227,7 @@ def _get_device(x):
     if numpy.isscalar(x):
         return cuda.DummyDevice
     else:
-        return cuda.get_device(x)
+        return devhelper.get_device(x)
 
 
 class Summary(object):

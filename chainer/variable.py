@@ -319,8 +319,10 @@ class Variable(object):
 
         if dst_dev.id < 0:
             src_grad = devutil.to_cpu(src)
-        else:
+        elif isinstance(src, cupy.ndarray):
             src_grad = devutil.to_gpu(src, device=dst_dev)
+        elif isinstance(src, mic.ndarray):
+            src_grad = devutil.to_mic(src, device=dst_dev)
 
         if dst is None:
             self._grad = src_grad

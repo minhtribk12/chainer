@@ -32,9 +32,6 @@ class LinearFunction(function.Function):
             )
 
     def forward(self, inputs):
-        if any(isinstance(i, micpy.ndarray) for i in inputs):
-            return self.forward_mic(inputs)
-
         x = _as_mat(inputs[0])
         W = inputs[1]
         y = x.dot(W.T).astype(x.dtype, copy=False)
@@ -43,20 +40,7 @@ class LinearFunction(function.Function):
             y += b
         return y,
 
-    def forward_mic(self, inputs):
-        x = _as_mat(inputs[0])
-        W = inputs[1]
-        #TODO(superbo): type conversion for y
-        y = micpy.matmul_transB(x, W)
-        if len(inputs) == 3:
-            b = inputs[2]
-            y += b
-        return y,
-
     def backward(self, inputs, grad_outputs):
-        if any(isinstance(i, micpy.ndarray) for i in inputs):
-            return self.backward_mic(inputs, grad_outputs)
-
         x = _as_mat(inputs[0])
         W = inputs[1]
         gy = grad_outputs[0]
@@ -65,19 +49,6 @@ class LinearFunction(function.Function):
         gW = gy.T.dot(x).astype(W.dtype, copy=False)
         if len(inputs) == 3:
             gb = gy.sum(0)
-            return gx, gW, gb
-        else:
-            return gx, gW
-
-    def backward_mic(self, inputs, grad_outputs):
-        x = _as_mat(inputs[0])
-        W = inputs[1]
-        gy = grad_outputs[0]
-        #TODO(superbo): type conversion for gx and gW
-        gx = micpy.dot(gy, W).reshape(inputs[0].shape)
-        gW = micpy.matmul_transA(gy, x)
-        if len(inputs) == 3:
-            gb = micpy.sum(gy, 0)
             return gx, gW, gb
         else:
             return gx, gW

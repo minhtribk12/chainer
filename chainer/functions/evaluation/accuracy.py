@@ -59,8 +59,26 @@ class Accuracy(function.Function):
             return xp.asarray((pred == t).mean(dtype=y.dtype)),
 
     def forward_mic(self, inputs):
+        #Cause this function is non-differentiable and do not play any
+        #roles in backward stage, these output will be numpy array
+        micpy = mic.micpy
         y, t = inputs
-        return mic.micpy.dnn.accuracy(y, t, self.ignore_label),
+
+        if self.ignore_label is not None:
+            mask = (t == self.ignore_label)
+            ignore_cnt = mask.sum()
+            pred = y.argmax(axis=1).reshape(t.shape)
+            count = ((pred == t) | mask).sum() - ignore_cnt
+            total = t.size - ignore_cnt
+
+            if total == 0:
+                return numpy.asarray(0.0, dtype=y.dtype)
+            else:
+                return numpy.asarray(float(count) / total, dtype=y.dtype)
+        else:
+            pred = y.argmax(axis=1).reshape(t.shape)
+            count = (pred == t).sum()
+            return numpy.asarray(float(count) / t.size, dtype=y.dtype),
 
 
 def accuracy(y, t, ignore_label=None):

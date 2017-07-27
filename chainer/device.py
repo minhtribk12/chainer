@@ -47,7 +47,7 @@ def get_device(*args):
         return cuda.get_device(*args)
     if mic.available:
         return mic.get_device(*args)
-    return cuda.DummyDevice
+    return DummyDevice
 
 
 # ------------------------------------------------------------------------------

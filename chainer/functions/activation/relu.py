@@ -41,7 +41,7 @@ class ReLU(function.Function):
         return y,
 
     def forward_mic(self, x):
-        return mic.micpy.dnn.relu(x[0]),
+        return mic.micpy.maximum(x[0], 0),
 
     def backward_cpu(self, x, gy):
         return utils.force_array(gy[0] * (x[0] > 0)),
@@ -58,7 +58,7 @@ class ReLU(function.Function):
         return gx,
 
     def backward_mic(self, x, gy):
-        return mic.micpy.dnn.relu_grad(x[0], gy[0]),
+        return (gy[0] * (x[0] > 0)),
 
 
 def relu(x, use_cudnn=True):
