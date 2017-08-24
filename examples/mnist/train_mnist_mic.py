@@ -32,7 +32,7 @@ def main():
                         help='Number of images in each mini-batch')
     parser.add_argument('--epoch', '-e', type=int, default=20,
                         help='Number of sweeps over the dataset to train')
-    parser.add_argument('--mic', '-g', type=int, default=-1,
+    parser.add_argument('--mic', '-m', type=int, default=-1,
                         help='MIC ID (negative value indicates CPU)')
     parser.add_argument('--out', '-o', default='result',
                         help='Directory to output the result')
@@ -53,8 +53,8 @@ def main():
     # iteration, which will be used by the PrintReport extension below.
     model = L.Classifier(MLP(args.unit, 10))
     if args.mic >= 0:
-        chainer.mic.get_device(args.mic).use()  # Make a specified GPU current
-        model.to_mic(0)  # Copy the model to the GPU
+        chainer.mic.get_device(args.mic).use()  # Make a specified MIC current
+        model.to_mic(args.mic)  # Copy the model to the MIC
 
     # Setup an optimizer
     #optimizer = chainer.optimizers.Adam()
