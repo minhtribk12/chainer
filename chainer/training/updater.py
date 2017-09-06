@@ -5,6 +5,7 @@ from chainer.dataset import convert
 from chainer.dataset import iterator as iterator_module
 from chainer import optimizer as optimizer_module
 from chainer import variable
+from time import time
 
 
 class Updater(object):
@@ -177,6 +178,7 @@ class StandardUpdater(Updater):
         optimizer = self._optimizers['main']
         loss_func = self.loss_func or optimizer.target
 
+        start = time()
         if isinstance(in_arrays, tuple):
             in_vars = tuple(variable.Variable(x) for x in in_arrays)
             optimizer.update(loss_func, *in_vars)
@@ -188,6 +190,9 @@ class StandardUpdater(Updater):
             in_var = variable.Variable(in_arrays)
             optimizer.update(loss_func, in_var)
 
+        end = time() - start
+        with open("/home/minhtri/workspace/chainer_modified/workspace/log/log_forward_update_of_trainer.txt","w") as file_log: 
+            file_log.write("Forward time: {}".format(end))
     def serialize(self, serializer):
         for name, iterator in six.iteritems(self._iterators):
             iterator.serialize(serializer['iterator:' + name])
