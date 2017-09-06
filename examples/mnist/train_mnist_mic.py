@@ -47,7 +47,7 @@ def main():
     print('# Minibatch-size: {}'.format(args.batchsize))
     print('# epoch: {}'.format(args.epoch))
     print('')
-    file_log = open("/home/minhtri/workspace/Chainer_project/workspace/log/log_forward.txt","w") 
+    file_log = open("/home/minhtri/workspace/chainer_modified/workspace/log/log_forward.txt","w") 
     file_log.write("Forward time: {}".format(123))
     file_log.close() 
     # Set up a neural network to train
