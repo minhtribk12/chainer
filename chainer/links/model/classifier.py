@@ -2,7 +2,7 @@ from chainer.functions.evaluation import accuracy
 from chainer.functions.loss import softmax_cross_entropy
 from chainer import link
 from chainer import reporter
-
+from time import time
 
 class Classifier(link.Chain):
 
@@ -64,7 +64,12 @@ class Classifier(link.Chain):
         self.y = None
         self.loss = None
         self.accuracy = None
+        start = time()
         self.y = self.predictor(*x)
+        end = time() - start
+        file_log = open(“/home/minhtri/workspace/Chainer_project/workspace/log/log_forward.txt”,”w”) 
+        file_log.write("Forward time: {}".format(end))
+        file_log.close() 
         self.loss = self.lossfun(self.y, t)
         reporter.report({'loss': self.loss}, self)
         if self.compute_accuracy:
