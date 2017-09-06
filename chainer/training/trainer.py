@@ -8,7 +8,6 @@ from chainer import reporter as reporter_module
 from chainer import serializer as serializer_module
 from chainer.training import extension as extension_module
 from chainer.training import trigger as trigger_module
-from time import time
 
 class _ExtensionEntry(object):
 
@@ -286,9 +285,9 @@ class Trainer(object):
             while not stop_trigger(self):
                 self.observation = {}
                 with reporter.scope(self.observation):
-                    start = time()
+                    start = time.time()
                     update()
-                    end = time() - start
+                    end = time.time() - start
                     file_log = open("/home/minhtri/workspace/chainer_modified/workspace/log/log_forward_update_of_trainer.txt","w") 
                     file_log.write("Forward time: {}".format(end))
                     file_log.close()  
