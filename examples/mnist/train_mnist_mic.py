@@ -104,9 +104,8 @@ def main():
     start = time()
     trainer.run()
     end = time() - start
-    file_log = open("/home/minhtri/workspace/chainer_modified/workspace/log/log1.txt","w") 
-    file_log.write("run time: {}".format(end))
-    file_log.close()  
+    with open("/home/minhtri/workspace/chainer_modified/workspace/log/log1.txt","w") as file_log: 
+        file_log.write("run time: {}\n".format(end)) 
 
 if __name__ == '__main__':
     main()

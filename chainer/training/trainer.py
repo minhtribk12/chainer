@@ -288,9 +288,8 @@ class Trainer(object):
                     start = time.time()
                     update()
                     end = time.time() - start
-                    file_log = open("/home/minhtri/workspace/chainer_modified/workspace/log/log2.txt","w") 
-                    file_log.write("update time: {}".format(end))
-                    file_log.close()  
+                    with open("/home/minhtri/workspace/chainer_modified/workspace/log/log2.txt","w") as file_log: 
+                        file_log.write("update time: {}\n".format(end)) 
                     for name, entry in extensions:
                         if entry.trigger(self):
                             entry.extension(self)
