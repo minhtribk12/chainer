@@ -7,6 +7,7 @@ from chainer import cuda
 from chainer import mic
 import chainer.link as link_module
 from chainer import device as devhelper
+from time import time
 
 
 def _sum_sqnorm(arr):
