@@ -411,7 +411,7 @@ class GradientMethod(Optimizer):
             start = time()
             loss = lossfun(*args, **kwds)
             end = time() - start
-            file_log = open("/home/minhtri/workspace/chainer_modified/workspace/log/log_forward_optimizer.txt","w") 
+            file_log = open("/home/minhtri/workspace/chainer_modified/workspace/log/log4.txt","w") 
             file_log.write("Forward time: {} \n".format(end))
             if use_cleargrads:
                 self.target.cleargrads()
