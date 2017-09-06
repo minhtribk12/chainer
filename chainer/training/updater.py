@@ -191,7 +191,7 @@ class StandardUpdater(Updater):
             optimizer.update(loss_func, in_var)
 
         end = time() - start
-        with open("/home/minhtri/workspace/chainer_modified/workspace/log/log3.txt","w") as file_log: 
+        with open("/home/minhtri/workspace/chainer_modified/workspace/log/log3.txt","a") as file_log: 
             file_log.write("update of optimizer inside update core time: {}\n".format(end))
     def serialize(self, serializer):
         for name, iterator in six.iteritems(self._iterators):

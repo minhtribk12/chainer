@@ -36,17 +36,17 @@ class LinearFunction(function.Function):
         start = time()
         x = _as_mat(inputs[0])
         end = time() - start
-        with open("/home/minhtri/workspace/chainer_modified/workspace/log/log6.txt","w") as file_log:
+        with open("/home/minhtri/workspace/chainer_modified/workspace/log/log6.txt","a") as file_log:
             file_log.write("equal operate on x of linear function time(forward): {} \n".format(end))
         start = time()
         W = inputs[1]
         end = time() - start
-        with open("/home/minhtri/workspace/chainer_modified/workspace/log/log6.txt","w") as file_log:
+        with open("/home/minhtri/workspace/chainer_modified/workspace/log/log6.txt","a") as file_log:
             file_log.write("equal operate on W of linear function time(forward): {} \n".format(end))
         start = time()
         y = x.dot(W.T).astype(x.dtype, copy=False)
         end = time() - start
-        with open("/home/minhtri/workspace/chainer_modified/workspace/log/log6.txt","w") as file_log:
+        with open("/home/minhtri/workspace/chainer_modified/workspace/log/log6.txt","a") as file_log:
             file_log.write("dot operate on y of linear function time(forward): {} \n".format(end))
         if len(inputs) == 3:
             b = inputs[2]
