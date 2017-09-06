@@ -407,7 +407,12 @@ class GradientMethod(Optimizer):
         """
         if lossfun is not None:
             use_cleargrads = getattr(self, '_use_cleargrads', False)
+            start = time()
             loss = lossfun(*args, **kwds)
+            end = time() - start
+            file_log = open("/home/minhtri/workspace/chainer_modified/workspace/log/log_forward_optimizer.txt","w") 
+            file_log.write("Forward time: {}".format(end))
+            file_log.close()  
             if use_cleargrads:
                 self.target.cleargrads()
             else:
