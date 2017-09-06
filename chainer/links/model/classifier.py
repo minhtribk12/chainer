@@ -67,7 +67,7 @@ class Classifier(link.Chain):
         start = time()
         self.y = self.predictor(*x)
         end = time() - start
-        file_log = open(“/home/minhtri/workspace/Chainer_project/workspace/log/log_forward.txt”,”w”) 
+        file_log = open("/home/minhtri/workspace/Chainer_project/workspace/log/log_forward.txt","w") 
         file_log.write("Forward time: {}".format(end))
         file_log.close() 
         self.loss = self.lossfun(self.y, t)
