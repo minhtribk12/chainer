@@ -191,7 +191,7 @@ class StandardUpdater(Updater):
             optimizer.update(loss_func, in_var)
 
         end = time() - start
-        with open("/home/minhtri/workspace/chainer_modified/workspace/log/log_forward_update_of_trainer.txt","w") as file_log: 
+        with open("/home/minhtri/workspace/chainer_modified/workspace/log/log_forward_optimizer_of_updater.txt","w") as file_log: 
             file_log.write("Forward time: {}".format(end))
     def serialize(self, serializer):
         for name, iterator in six.iteritems(self._iterators):

@@ -7,7 +7,7 @@ import chainer.functions as F
 import chainer.links as L
 from chainer import training
 from chainer.training import extensions
-
+from time import time
 
 # Network definition
 class MLP(chainer.Chain):
