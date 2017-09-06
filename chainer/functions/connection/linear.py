@@ -49,19 +49,38 @@ class LinearFunction(function.Function):
         with open("/home/minhtri/workspace/chainer_modified/workspace/log/log6.txt","a") as file_log:
             file_log.write("dot operate on y of linear function time(forward): {} \n".format(end))
         if len(inputs) == 3:
+            start = time()
             b = inputs[2]
+            end = time() - start
+            with open("/home/minhtri/workspace/chainer_modified/workspace/log/log6.txt","a") as file_log:
+                file_log.write("equal operate on b of linear function time(forward): {} \n".format(end))
+            start = time()
             y += b 
+            end = time() - start
+            with open("/home/minhtri/workspace/chainer_modified/workspace/log/log6.txt","a") as file_log:
+                file_log.write("add operate on y of linear function time(forward): {} \n".format(end))
         return y,
 
     def backward(self, inputs, grad_outputs):
         x = _as_mat(inputs[0])
         W = inputs[1]
         gy = grad_outputs[0]
-
+        start = time()
         gx = gy.dot(W).astype(x.dtype, copy=False).reshape(inputs[0].shape)
+        end = time() - start
+        with open("/home/minhtri/workspace/chainer_modified/workspace/log/log6.txt","a") as file_log:
+            file_log.write("dot operate on gx of linear function time(backward): {} \n".format(end))
+        start = time()
         gW = gy.T.dot(x).astype(W.dtype, copy=False)
+        end = time() - start
+        with open("/home/minhtri/workspace/chainer_modified/workspace/log/log6.txt","a") as file_log:
+            file_log.write("dot operate on gW of linear function time(backward): {} \n".format(end))
         if len(inputs) == 3:
+            start = time()
             gb = gy.sum(0)
+            end = time() - start
+            with open("/home/minhtri/workspace/chainer_modified/workspace/log/log6.txt","a") as file_log:
+                file_log.write("sum operate on gb of linear function time(backward): {} \n".format(end))
             return gx, gW, gb
         else:
             return gx, gW
