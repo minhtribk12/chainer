@@ -5,6 +5,7 @@ from chainer import mic
 from chainer import function
 from chainer import utils
 from chainer.utils import type_check
+from time import time
 
 
 if cuda.cudnn_enabled:
@@ -29,7 +30,12 @@ class ReLU(function.Function):
         )
 
     def forward_cpu(self, x):
-        return utils.force_array(numpy.maximum(x[0], 0, dtype=x[0].dtype)),
+        start = time()
+        y = utils.force_array(numpy.maximum(x[0], 0, dtype=x[0].dtype)),
+        end = time() - start
+        with open("/home/minhtri/workspace/chainer_modified/workspace/log/log6.txt","a") as file_log:
+            file_log.write("max of relu function time(forward cpu): {} \n".format(end))
+        return y
 
     def forward_gpu(self, x):
         if (cuda.cudnn_enabled and self.use_cudnn and
@@ -41,10 +47,20 @@ class ReLU(function.Function):
         return y,
 
     def forward_mic(self, x):
-        return mic.micpy.maximum(x[0], 0),
+        start = time()
+        y = mic.micpy.maximum(x[0], 0),
+        end = time() - start
+        with open("/home/minhtri/workspace/chainer_modified/workspace/log/log6.txt","a") as file_log:
+            file_log.write("max of relu function time(forward mic): {} \n".format(end))
+        return y
 
     def backward_cpu(self, x, gy):
-        return utils.force_array(gy[0] * (x[0] > 0)),
+        start = time()
+        y = utils.force_array(gy[0] * (x[0] > 0)),
+        end = time() - start
+        with open("/home/minhtri/workspace/chainer_modified/workspace/log/log6.txt","a") as file_log:
+            file_log.write("* operate in y of relu function time(backward cpu): {} \n".format(end))
+        return y
 
     def backward_gpu(self, x, gy):
         if (cuda.cudnn_enabled and self.use_cudnn and
@@ -58,7 +74,12 @@ class ReLU(function.Function):
         return gx,
 
     def backward_mic(self, x, gy):
-        return (gy[0] * (x[0] > 0)),
+        start = time()
+        y = (gy[0] * (x[0] > 0)),
+        end = time() - start
+        with open("/home/minhtri/workspace/chainer_modified/workspace/log/log6.txt","a") as file_log:
+            file_log.write("* operate in y of relu function time(backward mic): {} \n".format(end))
+        return y
 
 
 def relu(x, use_cudnn=True):
