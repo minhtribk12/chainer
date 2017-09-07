@@ -69,7 +69,11 @@ class Classifier(link.Chain):
         end = time() - start
         with open("/home/minhtri/workspace/chainer_modified/workspace/log/log5.txt","a") as file_log:
             file_log.write("Forward of chain time: {}\n".format(end)) 
+        start = time()
         self.loss = self.lossfun(self.y, t)
+        end = time() - start
+        with open("/home/minhtri/workspace/chainer_modified/workspace/log/log5.txt","a") as file_log:
+            file_log.write("Forward of softmax time: {}\n".format(end)) 
         reporter.report({'loss': self.loss}, self)
         if self.compute_accuracy:
             self.accuracy = self.accfun(self.y, t)

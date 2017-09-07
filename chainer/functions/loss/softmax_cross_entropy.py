@@ -6,6 +6,7 @@ from chainer import mic
 from chainer import function
 from chainer.functions.activation import log_softmax
 from chainer.utils import type_check
+from time import time
 
 
 class SoftmaxCrossEntropy(function.Function):
@@ -93,12 +94,19 @@ class SoftmaxCrossEntropy(function.Function):
         x, t = inputs
         if chainer.is_debug():
             self._check_input_values(x, t)
-
+        start = time()
         log_y = log_softmax._log_softmax(x, False)
+        end = time() - start
+        with open("/home/minhtri/workspace/chainer_modified/workspace/log/log6.txt","a") as file_log:
+            file_log.write("_log_softmax function of softmax time(forward-mic): {} \n".format(end))
         if self.cache_score:
             self.y = micpy.exp(log_y)
 
+        start = time()
         log_yd = micpy.rollaxis(log_y, 1, log_y.ndim)
+        end = time() - start
+        with open("/home/minhtri/workspace/chainer_modified/workspace/log/log6.txt","a") as file_log:
+            file_log.write("micpy.rollaxis function of softmax time(forward-mic): {} \n".format(end))
         tmask = micpy.expand_dims(t, t.ndim)
         n_label = log_yd.shape[-1]
 
@@ -112,8 +120,11 @@ class SoftmaxCrossEntropy(function.Function):
         else:
             count = len(x)
         self._coeff = 1.0 / max(count, 1)
-
+        start = time()
         y = (log_yd * (self._imask == tmask)).sum(keepdims=True) * (-self._coeff)
+        end = time() - start
+        with open("/home/minhtri/workspace/chainer_modified/workspace/log/log6.txt","a") as file_log:
+            file_log.write(" * operate on y of softmax function time(forward-mic): {} \n".format(end))
         return y.reshape(()),
 
     def backward_cpu(self, inputs, grad_outputs):
@@ -166,6 +177,7 @@ class SoftmaxCrossEntropy(function.Function):
         return gx, None
 
     def backward_mic(self, inputs, grad_outputs):
+        start = time()
         micpy = mic.micpy
         x, t = inputs
         gloss = grad_outputs[0]
@@ -189,6 +201,9 @@ class SoftmaxCrossEntropy(function.Function):
         gx = micpy.rollaxis(gx, gx.ndim - 1, 1)
 
         gx *= gloss * self._coeff
+        end = time() - start
+        with open("/home/minhtri/workspace/chainer_modified/workspace/log/log6.txt","a") as file_log:
+            file_log.write("backward of softmax time(mic): {} \n".format(end))
         return gx, None
 
 
