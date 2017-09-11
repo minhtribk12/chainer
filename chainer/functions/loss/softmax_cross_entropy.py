@@ -97,7 +97,7 @@ class SoftmaxCrossEntropy(function.Function):
         start = time()
         log_y = log_softmax._log_softmax(x, False)
         end = time() - start
-        with open("/home/minhtri/workspace/chainer_modified/workspace/log/log6.txt","a") as file_log:
+        with open("/home/minhtri/workspace/numpy_test/workspace/log/log6.txt","a") as file_log:
             file_log.write("_log_softmax function of softmax time(forward-mic): {} \n".format(end))
         if self.cache_score:
             self.y = micpy.exp(log_y)
@@ -105,7 +105,7 @@ class SoftmaxCrossEntropy(function.Function):
         start = time()
         log_yd = micpy.rollaxis(log_y, 1, log_y.ndim)
         end = time() - start
-        with open("/home/minhtri/workspace/chainer_modified/workspace/log/log6.txt","a") as file_log:
+        with open("/home/minhtri/workspace/numpy_test/workspace/log/log6.txt","a") as file_log:
             file_log.write("micpy.rollaxis function of softmax time(forward-mic): {} \n".format(end))
         tmask = micpy.expand_dims(t, t.ndim)
         n_label = log_yd.shape[-1]
@@ -123,7 +123,7 @@ class SoftmaxCrossEntropy(function.Function):
         start = time()
         y = (log_yd * (self._imask == tmask)).sum(keepdims=True) * (-self._coeff)
         end = time() - start
-        with open("/home/minhtri/workspace/chainer_modified/workspace/log/log6.txt","a") as file_log:
+        with open("/home/minhtri/workspace/numpy_test/workspace/log/log6.txt","a") as file_log:
             file_log.write(" * operate on y of softmax function time(forward-mic): {} \n".format(end))
         return y.reshape(()),
 
@@ -202,7 +202,7 @@ class SoftmaxCrossEntropy(function.Function):
 
         gx *= gloss * self._coeff
         end = time() - start
-        with open("/home/minhtri/workspace/chainer_modified/workspace/log/log6.txt","a") as file_log:
+        with open("/home/minhtri/workspace/numpy_test/workspace/log/log6.txt","a") as file_log:
             file_log.write("backward of softmax time(mic): {} \n".format(end))
         return gx, None
 

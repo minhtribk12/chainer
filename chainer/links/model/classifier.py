@@ -67,19 +67,19 @@ class Classifier(link.Chain):
         start = time()
         self.y = self.predictor(*x)
         end = time() - start
-        with open("/home/minhtri/workspace/chainer_modified/workspace/log/log5.txt","a") as file_log:
+        with open("/home/minhtri/workspace/numpy_test/workspace/log/log5.txt","a") as file_log:
             file_log.write("Forward of chain time: {}\n".format(end)) 
         start = time()
         self.loss = self.lossfun(self.y, t)
         end = time() - start
-        with open("/home/minhtri/workspace/chainer_modified/workspace/log/log5.txt","a") as file_log:
+        with open("/home/minhtri/workspace/numpy_test/workspace/log/log5.txt","a") as file_log:
             file_log.write("Forward of softmax time: {}\n".format(end)) 
         reporter.report({'loss': self.loss}, self)
         if self.compute_accuracy:
             end = time() - start
             self.accuracy = self.accfun(self.y, t)
             end = time() - start
-            with open("/home/minhtri/workspace/chainer_modified/workspace/log/log5.txt","a") as file_log:
+            with open("/home/minhtri/workspace/numpy_test/workspace/log/log5.txt","a") as file_log:
                 file_log.write("Forward of accuracy function time: {}\n".format(end)) 
             reporter.report({'accuracy': self.accuracy}, self)
         return self.loss

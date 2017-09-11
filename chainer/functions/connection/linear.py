@@ -33,40 +33,33 @@ class LinearFunction(function.Function):
             )
 
     def forward(self, inputs):
-        start = time()
         x = _as_mat(inputs[0])
         end = time() - start
-        with open("/home/minhtri/workspace/chainer_modified/workspace/log/log6.txt","a") as file_log:
-            file_log.write("equal operate on x of linear function time(forward): {} \n".format(end))
-        start = time()
         W = inputs[1]
-        end = time() - start
-        with open("/home/minhtri/workspace/chainer_modified/workspace/log/log6.txt","a") as file_log:
-            file_log.write("equal operate on W of linear function time(forward): {} \n".format(end))
         start = time()
         y = x.dot(W.T).astype(x.dtype, copy=False)
         end = time() - start
-        with open("/home/minhtri/workspace/chainer_modified/workspace/log/log6.txt","a") as file_log:
+        with open("/home/minhtri/workspace/numpy_test/workspace/log/log6.txt","a") as file_log:
             file_log.write("dot operate on y of linear function time(forward): {} \n".format(end))
-        with open("/home/minhtri/workspace/chainer_modified/workspace/log/log_type.txt","a") as file_log:
-            file_log.write("(Forward dot) x data type: {} \n".format(type(x)))
-            file_log.write("(Forward dot) x shape: {} \n".format(x.shape)) 
-            file_log.write("(Forward dot) x dtype: {} \n".format(x.dtype))
-            file_log.write("(Forward dot) W data type: {} \n".format(type(W)))
-            file_log.write("(Forward dot) W shape: {} \n".format(W.shape))
-            file_log.write("(Forward dot) W dtype: {} \n".format(W.dtype)) 
+        # with open("/home/minhtri/workspace/numpy_test/workspace/log/log_type.txt","a") as file_log:
+        #     file_log.write("(Forward dot) x data type: {} \n".format(type(x)))
+        #     file_log.write("(Forward dot) x shape: {} \n".format(x.shape)) 
+        #     file_log.write("(Forward dot) x dtype: {} \n".format(x.dtype))
+        #     file_log.write("(Forward dot) W data type: {} \n".format(type(W)))
+        #     file_log.write("(Forward dot) W shape: {} \n".format(W.shape))
+        #     file_log.write("(Forward dot) W dtype: {} \n".format(W.dtype)) 
         if len(inputs) == 3:
-            start = time()
             b = inputs[2]
-            end = time() - start
-            with open("/home/minhtri/workspace/chainer_modified/workspace/log/log6.txt","a") as file_log:
-                file_log.write("equal operate on b of linear function time(forward): {} \n".format(end))
+            with open("/home/minhtri/workspace/numpy_test/workspace/log/log7.txt","a") as file_log:
+                file_log.write("+= is start \n")
             start = time()
             y += b 
             end = time() - start
-            with open("/home/minhtri/workspace/chainer_modified/workspace/log/log6.txt","a") as file_log:
+            with open("/home/minhtri/workspace/numpy_test/workspace/log/log7.txt","a") as file_log:
+                file_log.write("+= is end \n")
+            with open("/home/minhtri/workspace/numpy_test/workspace/log/log6.txt","a") as file_log:
                 file_log.write("add operate on y of linear function time(forward): {} \n".format(end))
-            with open("/home/minhtri/workspace/chainer_modified/workspace/log/log_type.txt","a") as file_log:
+            with open("/home/minhtri/workspace/numpy_test/workspace/log/log_type.txt","a") as file_log:
                 file_log.write("(Forward iadd) y data type: {} \n".format(type(y)))
                 file_log.write("(Forward iadd) y shape: {} \n".format(y.shape)) 
                 file_log.write("(Forward iadd) y dtype: {} \n".format(y.dtype))
@@ -82,14 +75,14 @@ class LinearFunction(function.Function):
         start = time()
         gx = gy.dot(W).astype(x.dtype, copy=False).reshape(inputs[0].shape)
         end = time() - start
-        with open("/home/minhtri/workspace/chainer_modified/workspace/log/log6.txt","a") as file_log:
+        with open("/home/minhtri/workspace/numpy_test/workspace/log/log6.txt","a") as file_log:
             file_log.write("dot operate on gx of linear function time(backward): {} \n".format(end))
         start = time()
         gW = gy.T.dot(x).astype(W.dtype, copy=False)
         end = time() - start
-        with open("/home/minhtri/workspace/chainer_modified/workspace/log/log6.txt","a") as file_log:
+        with open("/home/minhtri/workspace/numpy_test/workspace/log/log6.txt","a") as file_log:
             file_log.write("dot operate on gW of linear function time(backward): {} \n".format(end))
-        with open("/home/minhtri/workspace/chainer_modified/workspace/log/log_type.txt","a") as file_log:
+        with open("/home/minhtri/workspace/numpy_test/workspace/log/log_type.txt","a") as file_log:
             file_log.write("(Backward) gy data type: {} \n".format(type(gy))) 
             file_log.write("(Backward) gy shape: {} \n".format(gy.shape)) 
             file_log.write("(Backward) gy dtype: {} \n".format(gy.dtype))
@@ -103,7 +96,7 @@ class LinearFunction(function.Function):
             start = time()
             gb = gy.sum(0)
             end = time() - start
-            with open("/home/minhtri/workspace/chainer_modified/workspace/log/log6.txt","a") as file_log:
+            with open("/home/minhtri/workspace/numpy_test/workspace/log/log6.txt","a") as file_log:
                 file_log.write("sum operate on gb of linear function time(backward): {} \n".format(end))
             return gx, gW, gb
         else:

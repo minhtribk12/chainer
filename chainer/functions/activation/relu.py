@@ -33,7 +33,7 @@ class ReLU(function.Function):
         start = time()
         y = utils.force_array(numpy.maximum(x[0], 0, dtype=x[0].dtype)),
         end = time() - start
-        with open("/home/minhtri/workspace/chainer_modified/workspace/log/log6.txt","a") as file_log:
+        with open("/home/minhtri/workspace/numpy_test/workspace/log/log6.txt","a") as file_log:
             file_log.write("max of relu function time(forward cpu): {} \n".format(end))
         return y
 
@@ -50,7 +50,7 @@ class ReLU(function.Function):
         start = time()
         y = mic.micpy.maximum(x[0], 0),
         end = time() - start
-        with open("/home/minhtri/workspace/chainer_modified/workspace/log/log6.txt","a") as file_log:
+        with open("/home/minhtri/workspace/numpy_test/workspace/log/log6.txt","a") as file_log:
             file_log.write("max of relu function time(forward mic): {} \n".format(end))
         return y
 
@@ -58,7 +58,7 @@ class ReLU(function.Function):
         start = time()
         y = utils.force_array(gy[0] * (x[0] > 0)),
         end = time() - start
-        with open("/home/minhtri/workspace/chainer_modified/workspace/log/log6.txt","a") as file_log:
+        with open("/home/minhtri/workspace/numpy_test/workspace/log/log6.txt","a") as file_log:
             file_log.write("* operate in y of relu function time(backward cpu): {} \n".format(end))
         return y
 
@@ -77,7 +77,7 @@ class ReLU(function.Function):
         start = time()
         y = (gy[0] * (x[0] > 0)),
         end = time() - start
-        with open("/home/minhtri/workspace/chainer_modified/workspace/log/log6.txt","a") as file_log:
+        with open("/home/minhtri/workspace/numpy_test/workspace/log/log6.txt","a") as file_log:
             file_log.write("* operate in y of relu function time(backward mic): {} \n".format(end))
         return y
 
