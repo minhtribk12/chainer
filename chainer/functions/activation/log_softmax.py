@@ -66,7 +66,11 @@ def _log_softmax(x, use_cudnn):
                 y.data.ptr)
             return y
     log_z = logsumexp(x)
+    start = time()
     y = x - log_z
+    end = time() - start
+    with open("/home/minhtri/workspace/numpy_test/workspace/log/log6.txt","a") as file_log:
+        file_log.write("- operate on y of _log_softmax function time(forward): {} \n".format(end))
     return y
 
 
@@ -92,6 +96,7 @@ class LogSoftmax(function.Function):
         return self.y,
 
     def backward(self, x, gy):
+        start = time()
         xp = devutil.get_array_module(*x)
         if (xp != numpy and cuda.cudnn_enabled and self.use_cudnn and
                 _cudnn_version >= 3000):
@@ -108,7 +113,9 @@ class LogSoftmax(function.Function):
                 desc.value, gx.data.ptr)
         else:
             gx = gy[0] - xp.exp(self.y) * gy[0].sum(axis=1, keepdims=True)
-
+        end = time() - start
+        with open("/home/minhtri/workspace/numpy_test/workspace/log/log6.txt","a") as file_log:
+            file_log.write("backward of LogSoftmax time(mic): {} \n".format(end))
         return gx,
 
 
