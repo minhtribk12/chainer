@@ -26,10 +26,10 @@ class DatasetMixin(object):
             while current < stop and step > 0 or current > stop and step < 0:
                 ret.append(self.get_example(current))
                 with open("/home/minhtri/workspace/numpy_test/workspace/log/log7.txt","a") as file_log:
-                file_log.write("+=  2 is start \n")
+                    file_log.write("+=  2 is start \n")
                 current += step
                 with open("/home/minhtri/workspace/numpy_test/workspace/log/log7.txt","a") as file_log:
-                file_log.write("+= 2 is end \n")
+                    file_log.write("+= 2 is end \n")
             return ret
         else:
             return self.get_example(index)
