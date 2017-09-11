@@ -34,7 +34,6 @@ class LinearFunction(function.Function):
 
     def forward(self, inputs):
         x = _as_mat(inputs[0])
-        end = time() - start
         W = inputs[1]
         start = time()
         y = x.dot(W.T).astype(x.dtype, copy=False)
