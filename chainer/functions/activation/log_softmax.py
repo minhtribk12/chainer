@@ -19,33 +19,33 @@ def logsumexp(x):
     start = time()
     m = x.max(axis=1, keepdims=True)
     end = time() - start
-        with open("/home/minhtri/workspace/numpy_test/workspace/log/log6.txt","a") as file_log:
-            file_log.write("max operate on x of logsumexp function time(forward): {} \n".format(end))
+    with open("/home/minhtri/workspace/numpy_test/workspace/log/log6.txt","a") as file_log:
+        file_log.write("max operate on x of logsumexp function time(forward): {} \n".format(end))
     start = time()
     y = x - m
     end = time() - start
-        with open("/home/minhtri/workspace/numpy_test/workspace/log/log6.txt","a") as file_log:
-            file_log.write("- operate on y of logsumexp function time(forward): {} \n".format(end))
+    with open("/home/minhtri/workspace/numpy_test/workspace/log/log6.txt","a") as file_log:
+        file_log.write("- operate on y of logsumexp function time(forward): {} \n".format(end))
     start = time()
     xp.exp(y, out=y)
     end = time() - start
-        with open("/home/minhtri/workspace/numpy_test/workspace/log/log6.txt","a") as file_log:
-            file_log.write("exp operate on y of logsumexp function time(forward): {} \n".format(end))
+    with open("/home/minhtri/workspace/numpy_test/workspace/log/log6.txt","a") as file_log:
+        file_log.write("exp operate on y of logsumexp function time(forward): {} \n".format(end))
     start = time()
     s = y.sum(axis=1, keepdims=True)
     end = time() - start
-        with open("/home/minhtri/workspace/numpy_test/workspace/log/log6.txt","a") as file_log:
-            file_log.write("sum operate on y of logsumexp function time(forward): {} \n".format(end))
+    with open("/home/minhtri/workspace/numpy_test/workspace/log/log6.txt","a") as file_log:
+        file_log.write("sum operate on y of logsumexp function time(forward): {} \n".format(end))
     start = time()
     xp.log(s, out=s)
     end = time() - start
-        with open("/home/minhtri/workspace/numpy_test/workspace/log/log6.txt","a") as file_log:
-            file_log.write("log operate on s of logsumexp function time(forward): {} \n".format(end))
+    with open("/home/minhtri/workspace/numpy_test/workspace/log/log6.txt","a") as file_log:
+        file_log.write("log operate on s of logsumexp function time(forward): {} \n".format(end))
     start = time()
     m += s
     end = time() - start
-        with open("/home/minhtri/workspace/numpy_test/workspace/log/log6.txt","a") as file_log:
-            file_log.write("+= operate on m of logsumexp function time(forward): {} \n".format(end))
+    with open("/home/minhtri/workspace/numpy_test/workspace/log/log6.txt","a") as file_log:
+        file_log.write("+= operate on m of logsumexp function time(forward): {} \n".format(end))
     return m
 
 
