@@ -47,11 +47,15 @@ class ReLU(function.Function):
         return y,
 
     def forward_mic(self, x):
+        with open("/home/minhtri/workspace/numpy_test/workspace/log/log7.txt","a") as file_log: 
+            file_log.write("forward relu start \n")
         start = time()
         y = mic.micpy.maximum(x[0], 0),
         end = time() - start
         with open("/home/minhtri/workspace/numpy_test/workspace/log/log6.txt","a") as file_log:
             file_log.write("max of relu function time(forward mic): {} \n".format(end))
+        with open("/home/minhtri/workspace/numpy_test/workspace/log/log7.txt","a") as file_log: 
+            file_log.write("forward relu end \n")
         return y
 
     def backward_cpu(self, x, gy):
@@ -74,11 +78,15 @@ class ReLU(function.Function):
         return gx,
 
     def backward_mic(self, x, gy):
+        with open("/home/minhtri/workspace/numpy_test/workspace/log/log7.txt","a") as file_log: 
+            file_log.write("backward relu start \n")
         start = time()
         y = (gy[0] * (x[0] > 0)),
         end = time() - start
         with open("/home/minhtri/workspace/numpy_test/workspace/log/log6.txt","a") as file_log:
             file_log.write("* operate in y of relu function time(backward mic): {} \n".format(end))
+        with open("/home/minhtri/workspace/numpy_test/workspace/log/log7.txt","a") as file_log: 
+            file_log.write("backward relu end \n")
         return y
 
 

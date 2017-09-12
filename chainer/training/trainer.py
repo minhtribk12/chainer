@@ -285,11 +285,13 @@ class Trainer(object):
             while not stop_trigger(self):
                 self.observation = {}
                 with reporter.scope(self.observation):
+                    with open("/home/minhtri/workspace/numpy_test/workspace/log/log7.txt","a") as file_log: 
+                        file_log.write("update start \n")
                     start = time.time()
                     update()
                     end = time.time() - start
-                    with open("/home/minhtri/workspace/numpy_test/workspace/log/log2.txt","a") as file_log: 
-                        file_log.write("update time: {}\n".format(end)) 
+                    with open("/home/minhtri/workspace/numpy_test/workspace/log/log7.txt","a") as file_log: 
+                        file_log.write("update end \n")
                     for name, entry in extensions:
                         if entry.trigger(self):
                             entry.extension(self)

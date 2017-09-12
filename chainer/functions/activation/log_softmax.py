@@ -16,36 +16,52 @@ if cuda.cudnn_enabled:
 
 def logsumexp(x):
     xp = devutil.get_array_module(x)
+    with open("/home/minhtri/workspace/numpy_test/workspace/log/log7.txt","a") as file_log: 
+        file_log.write("max start \n")
     start = time()
     m = x.max(axis=1, keepdims=True)
     end = time() - start
     with open("/home/minhtri/workspace/numpy_test/workspace/log/log6.txt","a") as file_log:
         file_log.write("max operate on x of logsumexp function time(forward): {} \n".format(end))
+    with open("/home/minhtri/workspace/numpy_test/workspace/log/log7.txt","a") as file_log: 
+        file_log.write("max end \n")
+    with open("/home/minhtri/workspace/numpy_test/workspace/log/log7.txt","a") as file_log: 
+        file_log.write("- start \n")
     start = time()
     y = x - m
     end = time() - start
     with open("/home/minhtri/workspace/numpy_test/workspace/log/log6.txt","a") as file_log:
         file_log.write("- operate on y of logsumexp function time(forward): {} \n".format(end))
+    with open("/home/minhtri/workspace/numpy_test/workspace/log/log7.txt","a") as file_log: 
+        file_log.write("- end \n")
     start = time()
     xp.exp(y, out=y)
     end = time() - start
     with open("/home/minhtri/workspace/numpy_test/workspace/log/log6.txt","a") as file_log:
         file_log.write("exp operate on y of logsumexp function time(forward): {} \n".format(end))
+    with open("/home/minhtri/workspace/numpy_test/workspace/log/log7.txt","a") as file_log: 
+        file_log.write("sum start \n")
     start = time()
     s = y.sum(axis=1, keepdims=True)
     end = time() - start
     with open("/home/minhtri/workspace/numpy_test/workspace/log/log6.txt","a") as file_log:
         file_log.write("sum operate on y of logsumexp function time(forward): {} \n".format(end))
+    with open("/home/minhtri/workspace/numpy_test/workspace/log/log7.txt","a") as file_log: 
+        file_log.write("sum end \n")
     start = time()
     xp.log(s, out=s)
     end = time() - start
     with open("/home/minhtri/workspace/numpy_test/workspace/log/log6.txt","a") as file_log:
         file_log.write("log operate on s of logsumexp function time(forward): {} \n".format(end))
+    with open("/home/minhtri/workspace/numpy_test/workspace/log/log7.txt","a") as file_log: 
+        file_log.write("+= start \n")
     start = time()
     m += s
     end = time() - start
     with open("/home/minhtri/workspace/numpy_test/workspace/log/log6.txt","a") as file_log:
         file_log.write("+= operate on m of logsumexp function time(forward): {} \n".format(end))
+    with open("/home/minhtri/workspace/numpy_test/workspace/log/log7.txt","a") as file_log: 
+        file_log.write("+= end \n")
     return m
 
 
@@ -65,12 +81,20 @@ def _log_softmax(x, use_cudnn):
                 x_cube.data.ptr, zero.data, desc.value,
                 y.data.ptr)
             return y
+    with open("/home/minhtri/workspace/numpy_test/workspace/log/log7.txt","a") as file_log: 
+        file_log.write("logsumexp start \n")
     log_z = logsumexp(x)
+    with open("/home/minhtri/workspace/numpy_test/workspace/log/log7.txt","a") as file_log: 
+        file_log.write("logsumexp end \n")
+    with open("/home/minhtri/workspace/numpy_test/workspace/log/log7.txt","a") as file_log: 
+        file_log.write("- start \n")
     start = time()
     y = x - log_z
     end = time() - start
     with open("/home/minhtri/workspace/numpy_test/workspace/log/log6.txt","a") as file_log:
         file_log.write("- operate on y of _log_softmax function time(forward): {} \n".format(end))
+    with open("/home/minhtri/workspace/numpy_test/workspace/log/log7.txt","a") as file_log: 
+        file_log.write("- end \n")
     return y
 
 

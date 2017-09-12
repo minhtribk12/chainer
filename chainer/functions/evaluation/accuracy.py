@@ -5,6 +5,7 @@ from chainer import cuda
 from chainer import mic
 from chainer import function
 from chainer.utils import type_check
+from time import time
 
 
 class Accuracy(function.Function):
@@ -66,9 +67,21 @@ class Accuracy(function.Function):
 
         if self.ignore_label is not None:
             mask = (t == self.ignore_label)
+            start = time()
             ignore_cnt = mask.sum()
+            end = time() - start
+            with open("/home/minhtri/workspace/numpy_test/workspace/log/log6.txt","a") as file_log:
+                file_log.write("sum operate on ignore_cnt in accuracy function time: {}\n".format(end))
+            start = time()
             pred = y.argmax(axis=1).reshape(t.shape)
+            end = time() - start
+            with open("/home/minhtri/workspace/numpy_test/workspace/log/log6.txt","a") as file_log:
+                file_log.write("argmax & reshape operate 1 in accuracy function time: {}\n".format(end))
+            start = time()
             count = ((pred == t) | mask).sum() - ignore_cnt
+            end = time() - start
+            with open("/home/minhtri/workspace/numpy_test/workspace/log/log6.txt","a") as file_log:
+                file_log.write("sum operate on count in accuracy function time: {}\n".format(end))
             total = t.size - ignore_cnt
 
             if total == 0:
@@ -76,8 +89,16 @@ class Accuracy(function.Function):
             else:
                 return numpy.asarray(float(count) / total, dtype=y.dtype)
         else:
+            start = time()
             pred = y.argmax(axis=1).reshape(t.shape)
+            end = time() - start
+            with open("/home/minhtri/workspace/numpy_test/workspace/log/log6.txt","a") as file_log:
+                file_log.write("argmax & reshape operate 2 in accuracy function time: {}\n".format(end))
+            start = time()
             count = (pred == t).sum()
+            end = time() - start
+            with open("/home/minhtri/workspace/numpy_test/workspace/log/log6.txt","a") as file_log:
+                file_log.write("sum operate on count 2 in accuracy function time: {}\n".format(end))
             return numpy.asarray(float(count) / t.size, dtype=y.dtype),
 
 

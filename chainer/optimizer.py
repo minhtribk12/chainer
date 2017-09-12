@@ -406,6 +406,8 @@ class GradientMethod(Optimizer):
         :meth:`update_one_gpu`).
 
         """
+        with open("/home/minhtri/workspace/numpy_test/workspace/log/log7.txt","a") as file_log: 
+            file_log.write("update optimizer start \n")
         if lossfun is not None:
             use_cleargrads = getattr(self, '_use_cleargrads', False)
             start = time()
@@ -440,6 +442,8 @@ class GradientMethod(Optimizer):
         for name, param in self.target.namedparams():
             with devhelper.get_device(param.data):
                 self.update_one(param, states[name])
+        with open("/home/minhtri/workspace/numpy_test/workspace/log/log7.txt","a") as file_log: 
+            file_log.write("update optimizer end \n")
 
     def update_one(self, param, state):
         """Updates a parameter based on the corresponding gradient and state.
