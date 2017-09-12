@@ -101,14 +101,14 @@ def main():
         chainer.serializers.load_npz(args.resume, trainer)
 
     # Run the training
-    with open("/home/minhtri/workspace/numpy_test/workspace/log/log7.txt","a") as file_log: 
+    with open("./log/log7.txt","a") as file_log: 
         file_log.write("run start \n")
     start = time()
     trainer.run()
     end = time() - start
-    with open("/home/minhtri/workspace/numpy_test/workspace/log/log1.txt","a") as file_log: 
+    with open("./log/log1.txt","a") as file_log: 
         file_log.write("run time: {}\n".format(end)) 
-    with open("/home/minhtri/workspace/numpy_test/workspace/log/log7.txt","a") as file_log: 
+    with open("./log/log7.txt","a") as file_log: 
         file_log.write("run end \n")
 
 if __name__ == '__main__':

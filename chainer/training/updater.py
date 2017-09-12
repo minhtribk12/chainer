@@ -177,7 +177,7 @@ class StandardUpdater(Updater):
 
         optimizer = self._optimizers['main']
         loss_func = self.loss_func or optimizer.target
-        with open("/home/minhtri/workspace/numpy_test/workspace/log/log7.txt","a") as file_log: 
+        with open("./log/log7.txt","a") as file_log: 
             file_log.write("update core start \n")
         start = time()
         if isinstance(in_arrays, tuple):
@@ -192,9 +192,9 @@ class StandardUpdater(Updater):
             optimizer.update(loss_func, in_var)
 
         end = time() - start
-        with open("/home/minhtri/workspace/numpy_test/workspace/log/log3.txt","a") as file_log: 
+        with open("./log/log3.txt","a") as file_log: 
             file_log.write("update of optimizer inside update core time: {}\n".format(end))
-        with open("/home/minhtri/workspace/numpy_test/workspace/log/log7.txt","a") as file_log: 
+        with open("./log/log7.txt","a") as file_log: 
             file_log.write("update core end \n")
     def serialize(self, serializer):
         for name, iterator in six.iteritems(self._iterators):

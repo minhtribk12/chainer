@@ -64,34 +64,34 @@ class Classifier(link.Chain):
         self.y = None
         self.loss = None
         self.accuracy = None
-        with open("/home/minhtri/workspace/numpy_test/workspace/log/log7.txt","a") as file_log: 
+        with open("./log/log7.txt","a") as file_log: 
             file_log.write("chain start \n")
         start = time()
         self.y = self.predictor(*x)
         end = time() - start
-        with open("/home/minhtri/workspace/numpy_test/workspace/log/log5.txt","a") as file_log:
+        with open("./log/log5.txt","a") as file_log:
             file_log.write("Forward of chain time: {}\n".format(end)) 
-        with open("/home/minhtri/workspace/numpy_test/workspace/log/log7.txt","a") as file_log: 
+        with open("./log/log7.txt","a") as file_log: 
             file_log.write("chain end \n")
-        with open("/home/minhtri/workspace/numpy_test/workspace/log/log7.txt","a") as file_log: 
+        with open("./log/log7.txt","a") as file_log: 
             file_log.write("softmax start \n")
         start = time()
         self.loss = self.lossfun(self.y, t)
         end = time() - start
-        with open("/home/minhtri/workspace/numpy_test/workspace/log/log5.txt","a") as file_log:
+        with open("./log/log5.txt","a") as file_log:
             file_log.write("Forward of softmax time: {}\n".format(end))
-        with open("/home/minhtri/workspace/numpy_test/workspace/log/log7.txt","a") as file_log: 
+        with open("./log/log7.txt","a") as file_log: 
             file_log.write("softmax end \n") 
         reporter.report({'loss': self.loss}, self)
         if self.compute_accuracy:
-            with open("/home/minhtri/workspace/numpy_test/workspace/log/log7.txt","a") as file_log: 
+            with open("./log/log7.txt","a") as file_log: 
                 file_log.write("accuracy start \n")
             start = time()
             self.accuracy = self.accfun(self.y, t)
             end = time() - start
-            with open("/home/minhtri/workspace/numpy_test/workspace/log/log5.txt","a") as file_log:
+            with open("./log/log5.txt","a") as file_log:
                 file_log.write("Forward of accuracy function time: {}\n".format(end))
-                with open("/home/minhtri/workspace/numpy_test/workspace/log/log7.txt","a") as file_log: 
-                    file_log.write("accuracy end \n") 
+            with open("./log/log7.txt","a") as file_log: 
+                file_log.write("accuracy end \n") 
             reporter.report({'accuracy': self.accuracy}, self)
         return self.loss
