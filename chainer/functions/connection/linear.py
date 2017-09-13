@@ -63,11 +63,21 @@ class LinearFunction(function.Function):
         c_ = numpy.zeros((m,n))
         device_mic = pymic.devices[0]
         library_mic = device_mic.load_library("libdgemm.so")
+        with open("./log/log7.txt","a") as file_log: 
+            file_log.write("point 1 \n")
         stream_mic = device_mic.get_default_stream()
+        with open("./log/log7.txt","a") as file_log: 
+            file_log.write("point 2 \n")
         alpha_mic = 1.0
         beta_mic = 0.0
+        with open("./log/log7.txt","a") as file_log: 
+            file_log.write("point 3 \n")
         offl_a = stream_mic.bind(a_)
+        with open("./log/log7.txt","a") as file_log: 
+            file_log.write("point 4 \n")
         offl_b = stream_mic.bind(b_)
+        with open("./log/log7.txt","a") as file_log: 
+            file_log.write("point 5 \n")
         offl_c = stream_mic.bind(c_)
         with open("./log/log7.txt","a") as file_log: 
             file_log.write("invoke start \n")
