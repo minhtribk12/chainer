@@ -49,7 +49,7 @@ class LinearFunction(function.Function):
 
         # construct some matrices
         operand1.reshape((m,n))
-        operand2.reshape((m,n))
+        a_.reshape((m,n))
         b_ = numpy.diag(numpy.ones(n)).reshape((n,n))
         
         alpha_mic = 1.0
