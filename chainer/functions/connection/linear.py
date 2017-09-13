@@ -109,8 +109,8 @@ class LinearFunction(function.Function):
         #y = u.astype(x.dtype, copy=False)
         if len(inputs) == 3:
             b = inputs[2]
-            #y += b
-            y = self.iadd_mic(y,b)
+            y += b
+            u = self.iadd_mic(y,b)
         return y,
 
     def backward(self, inputs, grad_outputs):
