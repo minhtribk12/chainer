@@ -61,8 +61,9 @@ class LinearFunction(function.Function):
 
         stream_mic.invoke(library_mic.dgemm_kernel, offl_a, offl_b, offl_c, m, n, n, alpha_mic, beta_mic)
         
-        offl_c.update_host()
         stream_mic.sync()
+        
+        offl_c.update_host()
         output_mic = offl_c.array
         return output_mic
     def dot_mic(self, operand1, operand2):
