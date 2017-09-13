@@ -89,9 +89,9 @@ class LinearFunction(function.Function):
     def forward(self, inputs):
         x = _as_mat(inputs[0])
         W = inputs[1]
-        #y = x.dot(W.T)
-        u = self.dot_mic(x, (W.T))
-        y = u.astype(x.dtype, copy=False)
+        y = x.dot(W.T)
+        #u = self.dot_mic(x, (W.T))
+        #y = u.astype(x.dtype, copy=False)
         if len(inputs) == 3:
             b = inputs[2]
             #y += b
