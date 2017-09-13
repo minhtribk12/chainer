@@ -56,8 +56,8 @@ class LinearFunction(function.Function):
         return offl_c.array
     def dot_mic(self, operand1, operand2):
         m = operand1.shape[0]
-        n = operand1.shape[1]
-        k = operand2.shape[1]
+        k = operand1.shape[1]
+        n = operand2.shape[1]
         a_ = operand1
         b_ = operand2
         c_ = numpy.zeros((m,n))
@@ -83,7 +83,7 @@ class LinearFunction(function.Function):
         with open("./log/log7.txt","a") as file_log: 
             file_log.write("dot start \n")
         start = time()
-        y = self.dot_mic(x, W.T).astype(x.dtype, copy=False)
+        y = self.dot_mic(x, (W.T)).astype(x.dtype, copy=False)
         end = time() - start
         with open("./log/log6.txt","a") as file_log:
             file_log.write("dot operate on y of linear function time(forward): {} \n".format(end))
