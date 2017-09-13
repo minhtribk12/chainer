@@ -1,5 +1,7 @@
 from chainer import function
 from chainer.utils import type_check
+import numpy
+import pymic
 
 
 def _as_mat(x):
@@ -29,14 +31,72 @@ class LinearFunction(function.Function):
                 b_type.ndim == 1,
                 b_type.shape[0] == w_type.shape[0],
             )
-
+    #minhtribk12 - modified 13/09/17
+    #Start
+    def iadd_mic(self, operand1, operand2):
+        m = operand1.shape[0]
+        n = operand1.shape[1]
+        c_ = operand1
+        a_ = numpy.tile(operand2,(m,1))
+        device_mic = pymic.devices[0]
+        library_mic = device_mic.load_library("libdgemm.so")
+        stream_mic = device_mic.get_default_stream()
+        alpha_mic = 1.0
+        beta_mic = 1.0
+        b_ = numpy.diag(numpy.ones(n)).reshape((n,n))
+        offl_a = stream_mic.bind(a_)
+        offl_b = stream_mic.bind(b_)
+        offl_c = stream_mic.bind(c_)
+        stream_mic.invoke(library_mic.dgemm_kernel, offl_a, offl_b, offl_c, m, n, n, alpha_mic, beta_mic)
+        stream_mic.sync()
+        offl_c.update_host()
+        stream_mic.sync()
+        operand1 = offl_c.array
+    def dot_mic(self, operand1, operand2):
+        m = operand1.shape[0]
+        k = operand1.shape[1]
+        n = operand2.shape[1]
+        a_ = operand1
+        b_ = operand2
+        c_ = numpy.zeros((m,n))
+        device_mic = pymic.devices[0]
+        library_mic = device_mic.load_library("libdgemm.so")
+        with open("./log/log7.txt","a") as file_log: 
+            file_log.write("point 1 \n")
+        stream_mic = device_mic.get_default_stream()
+        with open("./log/log7.txt","a") as file_log: 
+            file_log.write("point 2 \n")
+        alpha_mic = 1.0
+        beta_mic = 0.0
+        with open("./log/log7.txt","a") as file_log: 
+            file_log.write("point 3 \n")
+        offl_a = stream_mic.bind(a_)
+        with open("./log/log7.txt","a") as file_log: 
+            file_log.write("point 4 \n")
+        offl_b = stream_mic.bind(b_)
+        with open("./log/log7.txt","a") as file_log: 
+            file_log.write("point 5 \n")
+        offl_c = stream_mic.bind(c_)
+        with open("./log/log7.txt","a") as file_log: 
+            file_log.write("invoke start \n")
+        stream_mic.invoke(library_mic.dgemm_kernel, offl_a, offl_b, offl_c, m, n, k, alpha_mic, beta_mic)
+        with open("./log/log7.txt","a") as file_log: 
+            file_log.write("invoke end \n")
+        stream_mic.sync()
+        offl_c.update_host()
+        stream_mic.sync()
+        output_mic = offl_c.array
+        return output_mic
+    #End
     def forward(self, inputs):
         x = _as_mat(inputs[0])
         W = inputs[1]
-        y = x.dot(W.T).astype(x.dtype, copy=False)
+        #y = x.dot(W.T)
+        y = self.dot_mic(x, (W.T)).astype(x.dtype, copy=False)
         if len(inputs) == 3:
             b = inputs[2]
-            y += b
+            #y += b
+            self.iadd_mic(y,b)
         return y,
 
     def backward(self, inputs, grad_outputs):
