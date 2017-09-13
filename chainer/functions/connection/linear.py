@@ -33,7 +33,24 @@ class LinearFunction(function.Function):
                 b_type.ndim == 1,
                 b_type.shape[0] == w_type.shape[0],
             )
-
+    def iadd_mic(self, a, b):
+        m = a.shape[0]
+        n = a.shape[1]
+        a_ = numpy.tile(input,(m,1))
+        device_mic = pymic.devices[0]
+        library_mic = device_mic.load_library("libdgemm.so")
+        stream_mic = device_mic.get_default_stream()
+        alpha_mic = 1.0
+        beta_mic = 1.0
+        b_ = numpy.diag(numpy.ones(n)).reshape((n,n))
+        offl_a = stream_mic.bind(a_)
+        offl_b = stream_mic.bind(b_)
+        offl_c = stream_mic.bind(a)
+        stream_mic.invoke(library_mic.dgemm_kernel, offl_a, offl_b, offl_c, m, n, n, alpha_mic, beta_mic)
+        stream_mic.sync()
+        offl_c.update_host()
+        stream_mic.sync()
+        return offl_c.array
     def forward(self, inputs):
         with open("./log/log7.txt","a") as file_log: 
             file_log.write("forward linear start \n")
@@ -43,6 +60,27 @@ class LinearFunction(function.Function):
             file_log.write("dot start \n")
         start = time()
         y = x.dot(W.T).astype(x.dtype, copy=False)
+        #Tri - modify 13/9/17
+        #Start
+        # m = y.shape[0]
+        # n = y.shape[1]
+        # c_ = y
+        # a_ = numpy.tile(b,(m,1))
+        # device_mic = pymic.devices[0]
+        # library_mic = device_mic.load_library("libdgemm.so")
+        # stream_mic = device_mic.get_default_stream()
+        # alpha_mic = 1.0
+        # beta_mic = 1.0
+        # b_ = numpy.diag(numpy.ones(n)).reshape((n,n))
+        # offl_a = stream_mic.bind(a_)
+        # offl_b = stream_mic.bind(b_)
+        # offl_c = stream_mic.bind(c_)
+        # stream_mic.invoke(library_mic.dgemm_kernel, offl_a, offl_b, offl_c, m, n, n, alpha_mic, beta_mic)
+        # stream_mic.sync()
+        # offl_c.update_host()
+        # stream_mic.sync()
+        # y = offl_c.array
+        # End 
         end = time() - start
         with open("./log/log6.txt","a") as file_log:
             file_log.write("dot operate on y of linear function time(forward): {} \n".format(end))
@@ -60,27 +98,28 @@ class LinearFunction(function.Function):
             with open("./log/log7.txt","a") as file_log:
                 file_log.write("+= start \n")
             start = time()
+            y = iadd_mic (y, b)
             #y += b
             #Tri - modify 13/9/17
             #Start
-            m = y.shape[0]
-            n = y.shape[1]
-            c_ = y
-            a_ = numpy.tile(b,(m,1))
-            device_mic = pymic.devices[0]
-            library_mic = device_mic.load_library("libdgemm.so")
-            stream_mic = device_mic.get_default_stream()
-            alpha_mic = 1.0
-            beta_mic = 1.0
-            b_ = numpy.diag(numpy.ones(n)).reshape((n,n))
-            offl_a = stream_mic.bind(a_)
-            offl_b = stream_mic.bind(b_)
-            offl_c = stream_mic.bind(c_)
-            stream_mic.invoke(library_mic.dgemm_kernel, offl_a, offl_b, offl_c, m, n, n, alpha_mic, beta_mic)
-            stream_mic.sync()
-            offl_c.update_host()
-            stream_mic.sync()
-            y = offl_c.array
+            # m = y.shape[0]
+            # n = y.shape[1]
+            # c_ = y
+            # a_ = numpy.tile(b,(m,1))
+            # device_mic = pymic.devices[0]
+            # library_mic = device_mic.load_library("libdgemm.so")
+            # stream_mic = device_mic.get_default_stream()
+            # alpha_mic = 1.0
+            # beta_mic = 1.0
+            # b_ = numpy.diag(numpy.ones(n)).reshape((n,n))
+            # offl_a = stream_mic.bind(a_)
+            # offl_b = stream_mic.bind(b_)
+            # offl_c = stream_mic.bind(c_)
+            # stream_mic.invoke(library_mic.dgemm_kernel, offl_a, offl_b, offl_c, m, n, n, alpha_mic, beta_mic)
+            # stream_mic.sync()
+            # offl_c.update_host()
+            # stream_mic.sync()
+            # y = offl_c.array
             # End 
             end = time() - start
             with open("./log/log7.txt","a") as file_log:
