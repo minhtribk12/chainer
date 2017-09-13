@@ -69,7 +69,11 @@ class LinearFunction(function.Function):
         offl_a = stream_mic.bind(a_)
         offl_b = stream_mic.bind(b_)
         offl_c = stream_mic.bind(c_)
+        with open("./log/log7.txt","a") as file_log: 
+            file_log.write("invoke start \n")
         stream_mic.invoke(library_mic.dgemm_kernel, offl_a, offl_b, offl_c, m, n, k, alpha_mic, beta_mic)
+        with open("./log/log7.txt","a") as file_log: 
+            file_log.write("invoke end \n")
         stream_mic.sync()
         offl_c.update_host()
         stream_mic.sync()
