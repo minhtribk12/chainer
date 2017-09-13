@@ -98,7 +98,7 @@ class LinearFunction(function.Function):
             with open("./log/log7.txt","a") as file_log:
                 file_log.write("+= start \n")
             start = time()
-            y = iadd_mic (y, b)
+            y = self.iadd_mic(y, b)
             #y += b
             #Tri - modify 13/9/17
             #Start
