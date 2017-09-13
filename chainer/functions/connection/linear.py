@@ -56,8 +56,6 @@ class LinearFunction(function.Function):
         m = operand1.shape[0]
         k = operand1.shape[1]
         n = operand2.shape[1]
-        a_ = operand1
-        b_ = operand2
         c_ = numpy.zeros((m,n))
         device_mic = pymic.devices[0]
         library_mic = device_mic.load_library("libdgemm.so")
@@ -70,10 +68,10 @@ class LinearFunction(function.Function):
         beta_mic = 0.0
         with open("./log/log7.txt","a") as file_log: 
             file_log.write("point 3 \n")
-        offl_a = stream_mic.bind(a_)
+        offl_a = stream_mic.bind(operand1)
         with open("./log/log7.txt","a") as file_log: 
             file_log.write("point 4 \n")
-        offl_b = stream_mic.bind(b_)
+        offl_b = stream_mic.bind(operand2)
         with open("./log/log7.txt","a") as file_log: 
             file_log.write("point 5 \n")
         offl_c = stream_mic.bind(c_)
@@ -92,7 +90,8 @@ class LinearFunction(function.Function):
         x = _as_mat(inputs[0])
         W = inputs[1]
         #y = x.dot(W.T)
-        y = self.dot_mic(x, (W.T)).astype(x.dtype, copy=False)
+        u = self.dot_mic(x, (W.T))
+        y = u.astype(x.dtype, copy=False)
         if len(inputs) == 3:
             b = inputs[2]
             #y += b
