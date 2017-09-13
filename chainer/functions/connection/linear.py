@@ -33,7 +33,7 @@ class LinearFunction(function.Function):
                 b_type.ndim == 1,
                 b_type.shape[0] == w_type.shape[0],
             )
-    def iadd_mic(self, operand1, operand2, output_mic):
+    def iadd_mic(self, operand1, operand2):
         m = operand1.shape[0]
         n = operand1.shape[1]
         c_ = operand1
@@ -55,8 +55,7 @@ class LinearFunction(function.Function):
         stream_mic.sync()
         offl_c.update_host()
         stream_mic.sync()
-        output_mic = offl_c.array
-        return output_mic
+        return offl_c.array
     def forward(self, inputs):
         with open("./log/log7.txt","a") as file_log: 
             file_log.write("forward linear start \n")
@@ -104,7 +103,7 @@ class LinearFunction(function.Function):
             with open("./log/log7.txt","a") as file_log:
                 file_log.write("+= start \n")
             start = time()
-            y = self.iadd_mic(y, b, y)
+            y = self.iadd_mic(y, b)
             #y += b
             #Tri - modify 13/9/17
             #Start
