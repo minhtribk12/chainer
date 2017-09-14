@@ -109,7 +109,7 @@ class LinearFunction(function.Function):
         stream.sync()
         stream.deallocate_device_memory(offl_a._device_ptr)
         stream.deallocate_device_memory(offl_b._device_ptr)
-        stream.deallocate_device_memory(offl_c._device_ptr)
+        #stream.deallocate_device_memory(offl_c._device_ptr)
         stream.sync()
         return output_mic
     #End
