@@ -99,7 +99,7 @@ class LinearFunction(function.Function):
               m, n, k, alpha, beta)
         with open("./log/log7.txt","a") as file_log: 
             file_log.write("point 7 \n")
-        #stream.sync()
+        stream.sync()
         with open("./log/log7.txt","a") as file_log: 
             file_log.write("point 8 \n")
         offl_c.update_host()
