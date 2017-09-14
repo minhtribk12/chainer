@@ -74,8 +74,8 @@ class LinearFunction(function.Function):
         with open("./log/log7.txt","a") as file_log: 
             file_log.write("point 1 \n")
         m = a.shape[0]
-        k = a.shape[1]
         n = b.shape[1]
+        k = a.shape[1]
         c = np.zeros((m,n))
         with open("./log/log7.txt","a") as file_log: 
             file_log.write("point 2 \n")
@@ -93,9 +93,11 @@ class LinearFunction(function.Function):
             file_log.write("point 5 \n")
         # associate host arrays with device arrats
         offl_a = stream.bind(a)
+        stream.sync()
         offl_b = stream.bind(b)
+        stream.sync()
         offl_c = stream.bind(c)
-        stream.sync()        
+        stream.sync()
         with open("./log/log7.txt","a") as file_log: 
             file_log.write("point 6 \n")
         stream.invoke(library.dgemm_kernel,
@@ -103,18 +105,18 @@ class LinearFunction(function.Function):
               m, n, k, alpha, beta)
         with open("./log/log7.txt","a") as file_log: 
             file_log.write("point 7 \n")
-        #stream.sync()
+        stream.sync()
         with open("./log/log7.txt","a") as file_log: 
             file_log.write("point 8 \n")
         offl_c.update_host()
         with open("./log/log7.txt","a") as file_log: 
             file_log.write("point 9 \n")
-        #stream.sync()
+        stream.sync()
         #stream.deallocate_device_memory(offl_a._device_ptr)
         #stream.deallocate_device_memory(offl_b._device_ptr)
         #stream.deallocate_device_memory(offl_c._device_ptr)
         #stream.sync()
-        del stream
+        #del stream
         output_mic = c.copy()
         return output_mic
     #End
