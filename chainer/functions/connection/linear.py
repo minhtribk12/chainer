@@ -35,7 +35,7 @@ class LinearFunction(function.Function):
     #Start
     def iadd_mic(self, operand1, operand2):
         # load the library with the kernel function (on the target)
-        device_mic = pymic.devices[0]
+        device_mic = mic.devices[0]
         library_mic = device_mic.load_library("libdgemm.so")
 
         # use the default stream
@@ -45,12 +45,12 @@ class LinearFunction(function.Function):
         m = operand1.shape[0]
         n = operand1.shape[1]
 
-        a_ = numpy.tile(operand2,(m,1))
+        a_ = np.tile(operand2,(m,1))
 
         # construct some matrices
         operand1.reshape((m,n))
         a_.reshape((m,n))
-        b_ = numpy.diag(numpy.ones(n)).reshape((n,n))
+        b_ = np.diag(np.ones(n)).reshape((n,n))
         
         alpha_mic = 1.0
         beta_mic = 1.0
@@ -70,28 +70,44 @@ class LinearFunction(function.Function):
         alpha = 1.0
         beta = 0.0
         # load the library with the kernel function (on the target)
+        with open("./log/log7.txt","a") as file_log: 
+            file_log.write("point 1 \n")
         device = mic.devices[0]
         library = device.load_library("libdgemm.so")
-
+        with open("./log/log7.txt","a") as file_log: 
+            file_log.write("point 2 \n")
         # use the default stream
         stream = device.get_default_stream()
-
+        with open("./log/log7.txt","a") as file_log: 
+            file_log.write("point 3 \n")
         m = operand1.shape[0]
         k = operand1.shape[1]
         n = operand2.shape[1]
-
+        with open("./log/log7.txt","a") as file_log: 
+            file_log.write("point 4 \n")
         c = np.zeros((m,n))
-
+        with open("./log/log7.txt","a") as file_log: 
+            file_log.write("point 5 \n")
         # associate host arrays with device arrats
         offl_a = stream.bind(operand1)
         offl_b = stream.bind(operand2)
-        offl_c = stream.bind(c)
+        offl_c = stream.bind(c)        
+        with open("./log/log7.txt","a") as file_log: 
+            file_log.write("point 6 \n")
         stream.invoke(library.dgemm_kernel,
               offl_a, offl_b, offl_c,
               m, n, k, alpha, beta)
+        with open("./log/log7.txt","a") as file_log: 
+            file_log.write("point 7 \n")
         stream.sync()
+        with open("./log/log7.txt","a") as file_log: 
+            file_log.write("point 8 \n")
         offl_c.update_host()
+        with open("./log/log7.txt","a") as file_log: 
+            file_log.write("point 9 \n")
         stream.sync()
+        with open("./log/log7.txt","a") as file_log: 
+            file_log.write("point 10 \n")
         result = offl_c.array
         return result
 
@@ -102,7 +118,11 @@ class LinearFunction(function.Function):
         #y = x.dot(W.T)
         #u = self.dot_mic(x, (W.T))
         #y = u.astype(x.dtype, copy=False)
+        with open("./log/log7.txt","a") as file_log: 
+            file_log.write("dot start \n")
         y = self.dot_mic(x,(W.T)).astype(x.dtype, copy=False)
+        with open("./log/log7.txt","a") as file_log: 
+            file_log.write("dot stop \n")
         if len(inputs) == 3:
             b = inputs[2]
             y += b
