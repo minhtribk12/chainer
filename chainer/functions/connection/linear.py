@@ -66,7 +66,7 @@ class LinearFunction(function.Function):
         offl_c.update_host()
         output_mic = offl_c.array
         return output_mic
-    def dot_mic(operand1, operand2):
+    def dot_mic(self, operand1, operand2):
         alpha = 1.0
         beta = 0.0
         # load the library with the kernel function (on the target)
@@ -89,7 +89,8 @@ class LinearFunction(function.Function):
         stream.invoke(library.dgemm_kernel,
               offl_a, offl_b, offl_c,
               m, n, k, alpha, beta)
-        stream.sync()offl_c.update_host()
+        stream.sync()
+        offl_c.update_host()
         stream.sync()
         result = offl_c.array
         return result
