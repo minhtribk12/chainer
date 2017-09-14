@@ -74,6 +74,7 @@ class LinearFunction(function.Function):
         m = operand1.shape[0]
         k = operand1.shape[1]
         n = operand2.shape[1]
+        output_mic = np.zeros((m,n))
         with open("./log/log7.txt","a") as file_log: 
             file_log.write("point 2 \n")
         # load the library with the kernel function (on the target)
