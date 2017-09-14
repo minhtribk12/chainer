@@ -84,7 +84,8 @@ class LinearFunction(function.Function):
             file_log.write("point 3 \n")
         device = mic.devices[0]
         # use the default stream
-        stream = device.get_default_stream()
+        stream = device.get_default_stream()        
+        stream.sync()
         with open("./log/log7.txt","a") as file_log: 
             file_log.write("point 4 \n")
         library = device.load_library("libdgemm.so")
@@ -109,10 +110,11 @@ class LinearFunction(function.Function):
         with open("./log/log7.txt","a") as file_log: 
             file_log.write("point 9 \n")
         stream.sync()
-        stream.deallocate_device_memory(offl_a._device_ptr)
-        stream.deallocate_device_memory(offl_b._device_ptr)
-        stream.deallocate_device_memory(offl_c._device_ptr)
-        stream.sync()
+        #stream.deallocate_device_memory(offl_a._device_ptr)
+        #stream.deallocate_device_memory(offl_b._device_ptr)
+        #stream.deallocate_device_memory(offl_c._device_ptr)
+        #stream.sync()
+        del stream
         output_mic = c.copy()
         return output_mic
     #End
