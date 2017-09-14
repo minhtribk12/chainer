@@ -66,56 +66,77 @@ class LinearFunction(function.Function):
         offl_c.update_host()
         output_mic = offl_c.array
         return output_mic
-    def dot_mic(self, operand1, operand2):
-        a = operand1.copy()
-        b = operand2.copy()
-        alpha = 1.0
-        beta = 0.0
-        with open("./log/log7.txt","a") as file_log: 
-            file_log.write("point 1 \n")
-        m = a.shape[0]
-        n = b.shape[1]
-        k = a.shape[1]
-        c = np.zeros((m,n))
-        with open("./log/log7.txt","a") as file_log: 
-            file_log.write("point 2 \n")
-        # load the library with the kernel function (on the target)
-        with open("./log/log7.txt","a") as file_log: 
-            file_log.write("point 3 \n")
+    def dot_mic(self, a, b):
         device = mic.devices[0]
-        # use the default stream
-        stream = device.get_default_stream()        
-        with open("./log/log7.txt","a") as file_log: 
-            file_log.write("point 4 \n")
-        library = device.load_library("libbenchmark_kernels.so")
-        with open("./log/log7.txt","a") as file_log: 
-            file_log.write("point 5 \n")
-        # associate host arrays with device arrats
+        library = device.load_library("libtests.so")
+        stream = device.get_default_stream()
+        m, n, k = a.shape[0], b.shape[1], a.shape[1]
+        alpha, beta = 1.0, 0
+        c = np.zeros((m, n))
         offl_a = stream.bind(a)
         offl_b = stream.bind(b)
         offl_c = stream.bind(c)
         stream.sync()
         with open("./log/log7.txt","a") as file_log: 
-            file_log.write("point 6 \n")
-        stream.invoke(library.sgemm_kernel,
-              offl_a, offl_b, offl_c,
-              m, n, k, alpha, beta)
+             file_log.write("point 1 \n")
+        stream.invoke(library.test_kernel_dgemm,
+                      offl_a, offl_b, offl_c,
+                      m, n, k, alpha, beta)
         with open("./log/log7.txt","a") as file_log: 
-            file_log.write("point 7 \n")
-        stream.sync()
-        with open("./log/log7.txt","a") as file_log: 
-            file_log.write("point 8 \n")
+             file_log.write("point 2 \n")
         offl_c.update_host()
-        with open("./log/log7.txt","a") as file_log: 
-            file_log.write("point 9 \n")
         stream.sync()
-        #stream.deallocate_device_memory(offl_a._device_ptr)
-        #stream.deallocate_device_memory(offl_b._device_ptr)
-        #stream.deallocate_device_memory(offl_c._device_ptr)
-        #stream.sync()
-        #del stream
-        output_mic = c.copy()
-        return output_mic
+        r = offl_c.array
+        return r
+        # a = operand1.copy()
+        # b = operand2.copy()
+        # alpha = 1.0
+        # beta = 0.0
+        # with open("./log/log7.txt","a") as file_log: 
+        #     file_log.write("point 1 \n")
+        # m = a.shape[0]
+        # n = b.shape[1]
+        # k = a.shape[1]
+        # c = np.zeros((m,n))
+        # with open("./log/log7.txt","a") as file_log: 
+        #     file_log.write("point 2 \n")
+        # # load the library with the kernel function (on the target)
+        # with open("./log/log7.txt","a") as file_log: 
+        #     file_log.write("point 3 \n")
+        # device = mic.devices[0]
+        # # use the default stream
+        # stream = device.get_default_stream()        
+        # with open("./log/log7.txt","a") as file_log: 
+        #     file_log.write("point 4 \n")
+        # library = device.load_library("libbenchmark_kernels.so")
+        # with open("./log/log7.txt","a") as file_log: 
+        #     file_log.write("point 5 \n")
+        # # associate host arrays with device arrats
+        # offl_a = stream.bind(a)
+        # offl_b = stream.bind(b)
+        # offl_c = stream.bind(c)
+        # stream.sync()
+        # with open("./log/log7.txt","a") as file_log: 
+        #     file_log.write("point 6 \n")
+        # stream.invoke(library.sgemm_kernel,
+        #       offl_a, offl_b, offl_c,
+        #       m, n, k, alpha, beta)
+        # with open("./log/log7.txt","a") as file_log: 
+        #     file_log.write("point 7 \n")
+        # stream.sync()
+        # with open("./log/log7.txt","a") as file_log: 
+        #     file_log.write("point 8 \n")
+        # offl_c.update_host()
+        # with open("./log/log7.txt","a") as file_log: 
+        #     file_log.write("point 9 \n")
+        # stream.sync()
+        # #stream.deallocate_device_memory(offl_a._device_ptr)
+        # #stream.deallocate_device_memory(offl_b._device_ptr)
+        # #stream.deallocate_device_memory(offl_c._device_ptr)
+        # #stream.sync()
+        # #del stream
+        # output_mic = c.copy()
+        # return output_mic
     #End
     def forward(self, inputs):
         x = _as_mat(inputs[0])
@@ -125,7 +146,9 @@ class LinearFunction(function.Function):
         #y = u.astype(x.dtype, copy=False)
         with open("./log/log7.txt","a") as file_log: 
             file_log.write("dot start \n")
-        y = self.dot_mic(x,(W.T)).astype(x.dtype, copy=False)
+        u = self.dot_mic(x,(W.T)).astype(x.dtype, copy=False)
+        y = u.copy()
+        del u
         with open("./log/log7.txt","a") as file_log: 
             file_log.write("dot stop \n")
         if len(inputs) == 3:
