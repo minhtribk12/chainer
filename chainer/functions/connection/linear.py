@@ -66,7 +66,7 @@ class LinearFunction(function.Function):
         offl_c.update_host()
         output_mic = offl_c.array
         return output_mic
-    def dot_mic(self, operand1, operand2, output_mic):
+    def dot_mic(self, operand1, operand2):
         alpha = 1.0
         beta = 0.0
         with open("./log/log7.txt","a") as file_log: 
