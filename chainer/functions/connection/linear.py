@@ -91,8 +91,8 @@ class LinearFunction(function.Function):
         with open("./log/log7.txt","a") as file_log: 
             file_log.write("point 5 \n")
         # associate host arrays with device arrats
-        offl_a = stream.bind(a)
-        offl_b = stream.bind(b)
+        offl_a = stream.copy(a)
+        offl_b = stream.copy(b)
         offl_c = stream.bind(c)
         stream.sync()        
         with open("./log/log7.txt","a") as file_log: 
@@ -113,7 +113,7 @@ class LinearFunction(function.Function):
         #stream.deallocate_device_memory(offl_b._device_ptr)
         #stream.deallocate_device_memory(offl_c._device_ptr)
         #stream.sync()
-        output_mic = c.astype(operand1.dtype)
+        output_mic = c.copy()
         return output_mic
     #End
     def forward(self, inputs):
