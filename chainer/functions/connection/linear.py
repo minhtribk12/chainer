@@ -69,29 +69,29 @@ class LinearFunction(function.Function):
     def dot_mic(self, operand1, operand2):
         alpha = 1.0
         beta = 0.0
-        # load the library with the kernel function (on the target)
         with open("./log/log7.txt","a") as file_log: 
             file_log.write("point 1 \n")
-        device = mic.devices[0]
-        library = device.load_library("libdgemm.so")
-        with open("./log/log7.txt","a") as file_log: 
-            file_log.write("point 2 \n")
-        # use the default stream
-        stream = device.get_default_stream()
-        with open("./log/log7.txt","a") as file_log: 
-            file_log.write("point 3 \n")
         m = operand1.shape[0]
         k = operand1.shape[1]
         n = operand2.shape[1]
         with open("./log/log7.txt","a") as file_log: 
-            file_log.write("point 4 \n")
+            file_log.write("point 2 \n")
         c = np.zeros((m,n))
+        # load the library with the kernel function (on the target)
+        with open("./log/log7.txt","a") as file_log: 
+            file_log.write("point 3 \n")
+        device = mic.devices[0]
+        # use the default stream
+        stream = device.get_default_stream()
+        with open("./log/log7.txt","a") as file_log: 
+            file_log.write("point 4 \n")
+        library = device.load_library("libdgemm.so")
         with open("./log/log7.txt","a") as file_log: 
             file_log.write("point 5 \n")
         # associate host arrays with device arrats
         offl_a = stream.bind(operand1)
         offl_b = stream.bind(operand2)
-        offl_c = stream.bind(c)        
+        offl_c = stream.bind(c, update_device=False)        
         with open("./log/log7.txt","a") as file_log: 
             file_log.write("point 6 \n")
         stream.invoke(library.dgemm_kernel,
@@ -99,13 +99,13 @@ class LinearFunction(function.Function):
               m, n, k, alpha, beta)
         with open("./log/log7.txt","a") as file_log: 
             file_log.write("point 7 \n")
-        stream.sync()
+        #stream.sync()
         with open("./log/log7.txt","a") as file_log: 
             file_log.write("point 8 \n")
         offl_c.update_host()
         with open("./log/log7.txt","a") as file_log: 
             file_log.write("point 9 \n")
-        #stream.sync()
+        stream.sync()
         with open("./log/log7.txt","a") as file_log: 
             file_log.write("point 10 \n")
         result = offl_c.array
