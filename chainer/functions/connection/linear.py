@@ -137,7 +137,7 @@ class LinearFunction(function.Function):
         stream_mic.sync()
         offl_c.update_host()
         stream_mic.sync()
-        y = offl_c.array
+        y = (offl_c.array).astype(x.dtype)
         if len(inputs) == 3:
             b = inputs[2]
             y += b
