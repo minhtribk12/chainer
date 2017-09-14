@@ -66,7 +66,7 @@ class LinearFunction(function.Function):
         offl_c.update_host()
         output_mic = offl_c.array
         return output_mic
-    def dot_mic(self, operand1, operand2):
+    def dot_mic(self, operand1, operand2, output_mic):
         alpha = 1.0
         beta = 0.0
         with open("./log/log7.txt","a") as file_log: 
@@ -76,7 +76,6 @@ class LinearFunction(function.Function):
         n = operand2.shape[1]
         with open("./log/log7.txt","a") as file_log: 
             file_log.write("point 2 \n")
-        c = np.zeros((m,n))
         # load the library with the kernel function (on the target)
         with open("./log/log7.txt","a") as file_log: 
             file_log.write("point 3 \n")
@@ -91,7 +90,7 @@ class LinearFunction(function.Function):
         # associate host arrays with device arrats
         offl_a = stream.bind(operand1)
         offl_b = stream.bind(operand2)
-        offl_c = stream.bind(c, update_device=False)        
+        offl_c = stream.bind(output_mic, update_device=False)        
         with open("./log/log7.txt","a") as file_log: 
             file_log.write("point 6 \n")
         stream.invoke(library.dgemm_kernel,
@@ -99,20 +98,12 @@ class LinearFunction(function.Function):
               m, n, k, alpha, beta)
         with open("./log/log7.txt","a") as file_log: 
             file_log.write("point 7 \n")
-        stream.sync()
         with open("./log/log7.txt","a") as file_log: 
             file_log.write("point 8 \n")
         offl_c.update_host()
         with open("./log/log7.txt","a") as file_log: 
             file_log.write("point 9 \n")
         stream.sync()
-        with open("./log/log7.txt","a") as file_log: 
-            file_log.write("point 10 \n")
-        result = offl_c.array
-        with open("./log/log7.txt","a") as file_log: 
-            file_log.write("point 11 \n")
-        return result
-
     #End
     def forward(self, inputs):
         x = _as_mat(inputs[0])
@@ -122,7 +113,9 @@ class LinearFunction(function.Function):
         #y = u.astype(x.dtype, copy=False)
         with open("./log/log7.txt","a") as file_log: 
             file_log.write("dot start \n")
-        y = self.dot_mic(x,(W.T)).astype(x.dtype, copy=False)
+        y = np.zeros(((x.shape[0]),((W.T).shape[1])),dtype=x.dtype)
+        self.dot_mic(x,(W.T),y)
+        y.astype(x.dtype, copy=False)
         with open("./log/log7.txt","a") as file_log: 
             file_log.write("dot stop \n")
         if len(inputs) == 3:
