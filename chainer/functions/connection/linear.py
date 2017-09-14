@@ -107,10 +107,10 @@ class LinearFunction(function.Function):
         with open("./log/log7.txt","a") as file_log: 
             file_log.write("point 9 \n")
         stream.sync()
-        stream.deallocate_device_memory(offl_a._device_ptr)
-        stream.deallocate_device_memory(offl_b._device_ptr)
+        #stream.deallocate_device_memory(offl_a._device_ptr)
+        #stream.deallocate_device_memory(offl_b._device_ptr)
         #stream.deallocate_device_memory(offl_c._device_ptr)
-        stream.sync()
+        #stream.sync()
         return output_mic
     #End
     def forward(self, inputs):
