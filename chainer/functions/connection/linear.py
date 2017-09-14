@@ -109,6 +109,8 @@ class LinearFunction(function.Function):
         with open("./log/log7.txt","a") as file_log: 
             file_log.write("point 10 \n")
         result = offl_c.array
+        with open("./log/log7.txt","a") as file_log: 
+            file_log.write("point 11 \n")
         return result
 
     #End
