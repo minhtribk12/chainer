@@ -67,8 +67,8 @@ class LinearFunction(function.Function):
         output_mic = offl_c.array
         return output_mic
     def dot_mic(self, operand1, operand2):
-        a = operand1.astype(operand1.dtype)
-        b = operand2.astype(operand2.dtype)
+        a = operand1.copy()
+        b = operand2.copy()
         alpha = 1.0
         beta = 0.0
         with open("./log/log7.txt","a") as file_log: 
@@ -93,7 +93,7 @@ class LinearFunction(function.Function):
         # associate host arrays with device arrats
         offl_a = stream.bind(a)
         offl_b = stream.bind(b)
-        offl_c = stream.bind(c, update_device=False)
+        offl_c = stream.bind(c)
         stream.sync()        
         with open("./log/log7.txt","a") as file_log: 
             file_log.write("point 6 \n")
