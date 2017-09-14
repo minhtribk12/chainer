@@ -67,14 +67,16 @@ class LinearFunction(function.Function):
         output_mic = offl_c.array
         return output_mic
     def dot_mic(self, operand1, operand2):
+        a = operand1.astype(operand1.dtype)
+        b = operand2.astype(operand2.dtype)
         alpha = 1.0
         beta = 0.0
         with open("./log/log7.txt","a") as file_log: 
             file_log.write("point 1 \n")
-        m = operand1.shape[0]
-        k = operand1.shape[1]
-        n = operand2.shape[1]
-        output_mic = np.zeros((m,n))
+        m = a.shape[0]
+        k = a.shape[1]
+        n = b.shape[1]
+        c = np.zeros((m,n))
         with open("./log/log7.txt","a") as file_log: 
             file_log.write("point 2 \n")
         # load the library with the kernel function (on the target)
@@ -89,9 +91,9 @@ class LinearFunction(function.Function):
         with open("./log/log7.txt","a") as file_log: 
             file_log.write("point 5 \n")
         # associate host arrays with device arrats
-        offl_a = stream.bind(operand1)
-        offl_b = stream.bind(operand2)
-        offl_c = stream.bind(output_mic, update_device=False)
+        offl_a = stream.bind(a)
+        offl_b = stream.bind(b)
+        offl_c = stream.bind(c, update_device=False)
         stream.sync()        
         with open("./log/log7.txt","a") as file_log: 
             file_log.write("point 6 \n")
@@ -111,6 +113,7 @@ class LinearFunction(function.Function):
         #stream.deallocate_device_memory(offl_b._device_ptr)
         #stream.deallocate_device_memory(offl_c._device_ptr)
         #stream.sync()
+        output_mic = c.astype(operand1.dtype)
         return output_mic
     #End
     def forward(self, inputs):
