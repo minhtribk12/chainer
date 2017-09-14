@@ -91,7 +91,8 @@ class LinearFunction(function.Function):
         # associate host arrays with device arrats
         offl_a = stream.bind(operand1)
         offl_b = stream.bind(operand2)
-        offl_c = stream.bind(output_mic, update_device=False)        
+        offl_c = stream.bind(output_mic, update_device=False)
+        stream.sync()        
         with open("./log/log7.txt","a") as file_log: 
             file_log.write("point 6 \n")
         stream.invoke(library.dgemm_kernel,
@@ -99,6 +100,7 @@ class LinearFunction(function.Function):
               m, n, k, alpha, beta)
         with open("./log/log7.txt","a") as file_log: 
             file_log.write("point 7 \n")
+        stream.sync()
         with open("./log/log7.txt","a") as file_log: 
             file_log.write("point 8 \n")
         offl_c.update_host()
