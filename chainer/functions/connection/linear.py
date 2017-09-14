@@ -113,7 +113,7 @@ class LinearFunction(function.Function):
         #y = u.astype(x.dtype, copy=False)
         with open("./log/log7.txt","a") as file_log: 
             file_log.write("dot start \n")
-        y = np.zeros(((x.shape[0]),((W.T).shape[1])),dtype=x.dtype)
+        y = np.zeros(((x.shape[0]),((W.T).shape[1])))
         self.dot_mic(x,(W.T),y)
         y.astype(x.dtype, copy=False)
         with open("./log/log7.txt","a") as file_log: 
