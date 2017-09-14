@@ -1,7 +1,7 @@
 from chainer import function
 from chainer.utils import type_check
-import numpy
-import pymic
+import numpy as np
+import pymic as mic
 
 
 def _as_mat(x):
