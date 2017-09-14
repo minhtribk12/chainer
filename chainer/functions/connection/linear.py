@@ -85,17 +85,14 @@ class LinearFunction(function.Function):
         device = mic.devices[0]
         # use the default stream
         stream = device.get_default_stream()        
-        stream.sync()
         with open("./log/log7.txt","a") as file_log: 
             file_log.write("point 4 \n")
-        library = device.load_library("libdgemm.so")
+        library = device.load_library("libbenchmark_kernels.so")
         with open("./log/log7.txt","a") as file_log: 
             file_log.write("point 5 \n")
         # associate host arrays with device arrats
         offl_a = stream.bind(a)
-        stream.sync()
         offl_b = stream.bind(b)
-        stream.sync()
         offl_c = stream.bind(c)
         stream.sync()
         with open("./log/log7.txt","a") as file_log: 
