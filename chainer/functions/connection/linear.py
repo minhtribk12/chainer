@@ -107,6 +107,7 @@ class LinearFunction(function.Function):
     #End
     def forward(self, inputs):
         x = _as_mat(inputs[0])
+        dtype_x = x.dtype
         W = inputs[1]
         #y = x.dot(W.T)
         #u = self.dot_mic(x, (W.T))
@@ -115,7 +116,7 @@ class LinearFunction(function.Function):
             file_log.write("dot start \n")
         y = np.zeros(((x.shape[0]),((W.T).shape[1])))
         self.dot_mic(x,(W.T),y)
-        y.astype(x.dtype, copy=False)
+        y.astype(dtype_x, copy=False)
         with open("./log/log7.txt","a") as file_log: 
             file_log.write("dot stop \n")
         if len(inputs) == 3:
