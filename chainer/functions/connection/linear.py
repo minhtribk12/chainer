@@ -66,7 +66,9 @@ class LinearFunction(function.Function):
         offl_c.update_host()
         output_mic = offl_c.array
         return output_mic
-    def dot_mic(self, a, b):
+    def dot_mic(self, operand1, operand2):
+        a = operand1.astype(np.float32)
+        b = operand2.astype(np.float32)
         device = mic.devices[0]
         library = device.load_library("libtests.so")
         stream = device.get_default_stream()
