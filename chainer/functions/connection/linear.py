@@ -124,9 +124,9 @@ class LinearFunction(function.Function):
             file_log.write("dot start \n")
         start = time()
         #y = self.dot_mic(x, (W.T)).astype(x.dtype, copy=False)
-        u = self.dot_mic(x,(W.T)).astype(x.dtype, copy=False)
-        y = u.copy()
-        del u
+        y = self.dot_mic(x,(W.T)).astype(x.dtype, copy=False)
+        #y = u.copy()
+        #del u
         end = time() - start
         with open("./log/log6.txt","a") as file_log:
             file_log.write("dot operate on y of linear function time(forward): {} \n".format(end))
