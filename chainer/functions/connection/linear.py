@@ -112,8 +112,8 @@ class LinearFunction(function.Function):
         stream.sync()
         with open("./log/log7.txt","a") as file_log: 
              file_log.write("point 3 \n")
-        r = offl_c.array
-        return r
+        #r = offl_c.array
+        return c
     #End
     def forward(self, inputs):
         with open("./log/log7.txt","a") as file_log: 
