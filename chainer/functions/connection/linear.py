@@ -171,8 +171,8 @@ class LinearFunction(function.Function):
         with open("./log/log7.txt","a") as file_log: 
             file_log.write("dot start \n")
         start = time()
-        #gx = gy.dot(W).astype(x.dtype, copy=False).reshape(inputs[0].shape)
-        gx = self.dot_mic(gy,W).astype(x.dtype, copy=False).reshape(inputs[0].shape)
+        gx = gy.dot(W).astype(x.dtype, copy=False).reshape(inputs[0].shape)
+        #gx = self.dot_mic(gy,W).astype(x.dtype, copy=False).reshape(inputs[0].shape)
         end = time() - start
         with open("./log/log6.txt","a") as file_log:
             file_log.write("dot operate on gx of linear function time(backward): {} \n".format(end))
@@ -181,8 +181,8 @@ class LinearFunction(function.Function):
         with open("./log/log7.txt","a") as file_log: 
             file_log.write("dot 2 start \n")
         start = time()
-        #gW = gy.T.dot(x).astype(W.dtype, copy=False)
-        gW = self.dot_mic((gy.T),x).astype(W.dtype, copy=False)
+        gW = gy.T.dot(x).astype(W.dtype, copy=False)
+        #gW = self.dot_mic((gy.T),x).astype(W.dtype, copy=False)
         end = time() - start
         with open("./log/log6.txt","a") as file_log:
             file_log.write("dot operate on gW of linear function time(backward): {} \n".format(end))
