@@ -3,8 +3,8 @@ from chainer.utils import type_check
 from time import time
 
 import micpy
-import pymic
-import numpy
+import pymic as mic
+import numpy as np
 
 def _as_mat(x):
     if x.ndim == 2:
@@ -54,40 +54,66 @@ class LinearFunction(function.Function):
         offl_c.update_host()
         stream_mic.sync()
         return offl_c.array
+    # def dot_mic(self, operand1, operand2):
+    #     m = operand1.shape[0]
+    #     k = operand1.shape[1]
+    #     n = operand2.shape[1]
+    #     a_ = operand1
+    #     b_ = operand2
+    #     c_ = numpy.zeros((m,n))
+    #     device_mic = pymic.devices[0]
+    #     library_mic = device_mic.load_library("libdgemm.so")
+    #     with open("./log/log7.txt","a") as file_log: 
+    #         file_log.write("point 1 \n")
+    #     stream_mic = device_mic.get_default_stream()
+    #     with open("./log/log7.txt","a") as file_log: 
+    #         file_log.write("point 2 \n")
+    #     alpha_mic = 1.0
+    #     beta_mic = 0.0
+    #     with open("./log/log7.txt","a") as file_log: 
+    #         file_log.write("point 3 \n")
+    #     offl_a = stream_mic.bind(a_)
+    #     with open("./log/log7.txt","a") as file_log: 
+    #         file_log.write("point 4 \n")
+    #     offl_b = stream_mic.bind(b_)
+    #     with open("./log/log7.txt","a") as file_log: 
+    #         file_log.write("point 5 \n")
+    #     offl_c = stream_mic.bind(c_)
+    #     with open("./log/log7.txt","a") as file_log: 
+    #         file_log.write("invoke start \n")
+    #     stream_mic.invoke(library_mic.dgemm_kernel, offl_a, offl_b, offl_c, m, n, k, alpha_mic, beta_mic)
+    #     with open("./log/log7.txt","a") as file_log: 
+    #         file_log.write("invoke end \n")
+    #     stream_mic.sync()
+    #     offl_c.update_host()
+    #     stream_mic.sync()
+    #     return offl_c.array
     def dot_mic(self, operand1, operand2):
-        m = operand1.shape[0]
-        k = operand1.shape[1]
-        n = operand2.shape[1]
-        a_ = operand1
-        b_ = operand2
-        c_ = numpy.zeros((m,n))
-        device_mic = pymic.devices[0]
-        library_mic = device_mic.load_library("libdgemm.so")
+        a = operand1.astype(np.float64)
+        b = operand2.astype(np.float64)
+        device = mic.devices[0]
+        library = device.load_library("libtests.so")
+        stream = device.get_default_stream()
+        m, n, k = a.shape[0], b.shape[1], a.shape[1]
+        alpha, beta = 1.0, 0
+        c = np.zeros((m, n))
+        offl_a = stream.bind(a)
+        offl_b = stream.bind(b)
+        offl_c = stream.bind(c)
+        stream.sync()
         with open("./log/log7.txt","a") as file_log: 
-            file_log.write("point 1 \n")
-        stream_mic = device_mic.get_default_stream()
+             file_log.write("point 1 \n")
+        stream.invoke(library.test_kernel_dgemm,
+                      offl_a, offl_b, offl_c,
+                      m, n, k, alpha, beta)
         with open("./log/log7.txt","a") as file_log: 
-            file_log.write("point 2 \n")
-        alpha_mic = 1.0
-        beta_mic = 0.0
-        with open("./log/log7.txt","a") as file_log: 
-            file_log.write("point 3 \n")
-        offl_a = stream_mic.bind(a_)
-        with open("./log/log7.txt","a") as file_log: 
-            file_log.write("point 4 \n")
-        offl_b = stream_mic.bind(b_)
-        with open("./log/log7.txt","a") as file_log: 
-            file_log.write("point 5 \n")
-        offl_c = stream_mic.bind(c_)
-        with open("./log/log7.txt","a") as file_log: 
-            file_log.write("invoke start \n")
-        stream_mic.invoke(library_mic.dgemm_kernel, offl_a, offl_b, offl_c, m, n, k, alpha_mic, beta_mic)
-        with open("./log/log7.txt","a") as file_log: 
-            file_log.write("invoke end \n")
-        stream_mic.sync()
+             file_log.write("point 2 \n")
         offl_c.update_host()
-        stream_mic.sync()
-        return offl_c.array
+        stream.sync()
+        with open("./log/log7.txt","a") as file_log: 
+             file_log.write("point 3 \n")
+        r = offl_c.array
+        return r
     #End
     def forward(self, inputs):
         with open("./log/log7.txt","a") as file_log: 
@@ -97,7 +123,10 @@ class LinearFunction(function.Function):
         with open("./log/log7.txt","a") as file_log: 
             file_log.write("dot start \n")
         start = time()
-        y = self.dot_mic(x, (W.T)).astype(x.dtype, copy=False)
+        #y = self.dot_mic(x, (W.T)).astype(x.dtype, copy=False)
+        u = self.dot_mic(x,(W.T)).astype(x.dtype, copy=False)
+        y = u.copy()
+        del u
         end = time() - start
         with open("./log/log6.txt","a") as file_log:
             file_log.write("dot operate on y of linear function time(forward): {} \n".format(end))
