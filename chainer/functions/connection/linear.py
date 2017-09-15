@@ -123,8 +123,8 @@ class LinearFunction(function.Function):
         with open("./log/log7.txt","a") as file_log: 
             file_log.write("dot start \n")
         start = time()
-        #y = self.dot_mic(x, (W.T)).astype(x.dtype, copy=False)
-        y = self.dot_mic(x,(W.T)).astype(x.dtype, copy=False)
+        y = x.dot(W.T).astype(x.dtype, copy=False)
+        #y = self.dot_mic(x,(W.T)).astype(x.dtype, copy=False)
         #y = u.copy()
         #del u
         end = time() - start
