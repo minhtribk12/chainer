@@ -67,8 +67,8 @@ class LinearFunction(function.Function):
         output_mic = offl_c.array
         return output_mic
     def dot_mic(self, operand1, operand2):
-        a = operand1.astype(np.float32)
-        b = operand2.astype(np.float32)
+        a = operand1.astype(np.float64)
+        b = operand2.astype(np.float64)
         device = mic.devices[0]
         library = device.load_library("libtests.so")
         stream = device.get_default_stream()
@@ -88,6 +88,8 @@ class LinearFunction(function.Function):
              file_log.write("point 2 \n")
         offl_c.update_host()
         stream.sync()
+        with open("./log/log7.txt","a") as file_log: 
+             file_log.write("point 3 \n")
         r = offl_c.array
         return r
         # a = operand1.copy()
