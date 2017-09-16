@@ -113,8 +113,8 @@ class LinearFunction(function.Function):
         stream.sync()
         with open("./log/log7.txt","a") as file_log: 
              file_log.write("point 3 \n")
-        r = c.copy()
-        return r
+        #r = c.copy()
+        return c
     #End
     def forward(self, inputs):
         with open("./log/log7.txt","a") as file_log: 
@@ -132,7 +132,7 @@ class LinearFunction(function.Function):
             file_log.write("(Forward iadd) W dtype: {} \n".format(W.dtype))
         start = time()
         #y = x.dot(W.T).astype(x.dtype, copy=False)
-        y = self.dot_mic(x,(W.T)).astype(x.dtype, copy=False)
+        y = self.dot_mic(x,(W.T)).astype(x.dtype)
         #y = u.copy()
         #del u
         end = time() - start
@@ -180,7 +180,7 @@ class LinearFunction(function.Function):
             file_log.write("dot start \n")
         start = time()
         #gx = gy.dot(W).astype(x.dtype, copy=False).reshape(inputs[0].shape)
-        gx = self.dot_mic(gy,W).astype(x.dtype, copy=False).reshape(inputs[0].shape)
+        gx = self.dot_mic(gy,W).astype(x.dtype).reshape(inputs[0].shape)
         end = time() - start
         with open("./log/log6.txt","a") as file_log:
             file_log.write("dot operate on gx of linear function time(backward): {} \n".format(end))
@@ -190,7 +190,7 @@ class LinearFunction(function.Function):
             file_log.write("dot 2 start \n")
         start = time()
         #gW = gy.T.dot(x).astype(W.dtype, copy=False)
-        gW = self.dot_mic((gy.T),x).astype(W.dtype, copy=False)
+        gW = self.dot_mic((gy.T),x).astype(W.dtype)
         end = time() - start
         with open("./log/log6.txt","a") as file_log:
             file_log.write("dot operate on gW of linear function time(backward): {} \n".format(end))
