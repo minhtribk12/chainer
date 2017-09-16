@@ -98,7 +98,9 @@ class LinearFunction(function.Function):
         alpha, beta = 1.0, 0
         c = np.zeros((m, n))
         offl_a = stream.bind(a)
+        stream.sync()
         offl_b = stream.bind(b)
+        stream.sync()
         offl_c = stream.bind(c)
         stream.sync()
         with open("./log/log7.txt","a") as file_log: 
