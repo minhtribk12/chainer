@@ -94,11 +94,11 @@ class LinearFunction(function.Function):
         device = mic.devices[0]
         library = device.load_library("libtests.so")
         stream = device.get_default_stream()
-        m, n, k = a.shape[0], b.shape[1], a.shape[1]
+        m, n, k = operand1.shape[0], operand2.shape[1], operand1.shape[1]
         alpha, beta = 1.0, 0
         c = np.zeros((m, n))
-        offl_a = stream.bind(a)
-        offl_b = stream.bind(b)
+        offl_a = stream.bind(operand1)
+        offl_b = stream.bind(operand2)
         offl_c = stream.bind(c)
         stream.sync()
         with open("./log/log7.txt","a") as file_log: 
