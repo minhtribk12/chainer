@@ -103,7 +103,7 @@ class LinearFunction(function.Function):
         stream.sync()
         with open("./log/log7.txt","a") as file_log: 
              file_log.write("point 1 \n")
-        stream.invoke(library.test_kernel_dgemm,
+        stream.invoke(library.sgemm_kernel,
                       offl_a, offl_b, offl_c,
                       m, n, k, alpha, beta)
         with open("./log/log7.txt","a") as file_log: 
