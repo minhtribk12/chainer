@@ -89,8 +89,8 @@ class LinearFunction(function.Function):
     #     stream_mic.sync()
     #     return offl_c.array
     def dot_mic(self, operand1, operand2):
-        a = operand1.astype(np.float64)
-        b = operand2.astype(np.float64)
+        #a = operand1.astype(np.float64)
+        #b = operand2.astype(np.float64)
         device = mic.devices[0]
         library = device.load_library("libtests.so")
         stream = device.get_default_stream()
@@ -123,8 +123,8 @@ class LinearFunction(function.Function):
         with open("./log/log7.txt","a") as file_log: 
             file_log.write("dot start \n")
         start = time()
-        y = x.dot(W.T).astype(x.dtype, copy=False)
-        #y = self.dot_mic(x,(W.T)).astype(x.dtype, copy=False)
+        #y = x.dot(W.T).astype(x.dtype, copy=False)
+        y = self.dot_mic(x,(W.T)).astype(x.dtype, copy=False)
         #y = u.copy()
         #del u
         end = time() - start
