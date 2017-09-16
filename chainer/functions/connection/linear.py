@@ -122,6 +122,13 @@ class LinearFunction(function.Function):
         W = inputs[1]
         with open("./log/log7.txt","a") as file_log: 
             file_log.write("dot start \n")
+        with open("./log/log_type.txt","a") as file_log:
+            file_log.write("(Forward iadd) x data type: {} \n".format(type(x)))
+            file_log.write("(Forward iadd) x shape: {} \n".format(x.shape)) 
+            file_log.write("(Forward iadd) x dtype: {} \n".format(x.dtype))
+            file_log.write("(Forward iadd) W data type: {} \n".format(type(W)))
+            file_log.write("(Forward iadd) W shape: {} \n".format(W.shape))
+            file_log.write("(Forward iadd) W dtype: {} \n".format(W.dtype))
         start = time()
         #y = x.dot(W.T).astype(x.dtype, copy=False)
         y = self.dot_mic(x,(W.T)).astype(x.dtype, copy=False)
@@ -171,8 +178,8 @@ class LinearFunction(function.Function):
         with open("./log/log7.txt","a") as file_log: 
             file_log.write("dot start \n")
         start = time()
-        gx = gy.dot(W).astype(x.dtype, copy=False).reshape(inputs[0].shape)
-        #gx = self.dot_mic(gy,W).astype(x.dtype, copy=False).reshape(inputs[0].shape)
+        #gx = gy.dot(W).astype(x.dtype, copy=False).reshape(inputs[0].shape)
+        gx = self.dot_mic(gy,W).astype(x.dtype, copy=False).reshape(inputs[0].shape)
         end = time() - start
         with open("./log/log6.txt","a") as file_log:
             file_log.write("dot operate on gx of linear function time(backward): {} \n".format(end))
@@ -181,8 +188,8 @@ class LinearFunction(function.Function):
         with open("./log/log7.txt","a") as file_log: 
             file_log.write("dot 2 start \n")
         start = time()
-        gW = gy.T.dot(x).astype(W.dtype, copy=False)
-        #gW = self.dot_mic((gy.T),x).astype(W.dtype, copy=False)
+        #gW = gy.T.dot(x).astype(W.dtype, copy=False)
+        gW = self.dot_mic((gy.T),x).astype(W.dtype, copy=False)
         end = time() - start
         with open("./log/log6.txt","a") as file_log:
             file_log.write("dot operate on gW of linear function time(backward): {} \n".format(end))
