@@ -98,9 +98,7 @@ class LinearFunction(function.Function):
         alpha, beta = 1.0, 0
         c = np.zeros((m, n))
         offl_a = stream.bind(a)
-        stream.sync()
         offl_b = stream.bind(b)
-        stream.sync()
         offl_c = stream.bind(c)
         stream.sync()
         with open("./log/log7.txt","a") as file_log: 
@@ -110,6 +108,7 @@ class LinearFunction(function.Function):
                       m, n, k, alpha, beta)
         with open("./log/log7.txt","a") as file_log: 
              file_log.write("point 2 \n")
+        stream.sync()
         offl_c.update_host()
         stream.sync()
         with open("./log/log7.txt","a") as file_log: 
